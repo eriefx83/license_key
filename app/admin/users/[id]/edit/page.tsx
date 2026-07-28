@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { PortalShell } from "@/app/_components/portal-shell";
-import { updateUser } from "@/app/admin/users/actions";
+import { EditUserForm } from "@/app/admin/users/[id]/edit/edit-user-form";
 import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 
@@ -13,6 +13,8 @@ type EditUserPageProps = {
 };
 
 type EditableUser = {
+  agent_limit: number;
+  agent_type: string;
   id: number;
   email: string;
   name: string;
@@ -21,6 +23,7 @@ type EditableUser = {
 };
 
 const errorMessages: Record<string, string> = {
+  agent_limit: "Enter a valid agent limit of at least 1.",
   email: "That email address is already used by another account.",
   invalid: "Check the form and enter valid user details.",
   password: "A new password must contain at least 8 characters.",
@@ -51,7 +54,7 @@ export default async function EditUserPage({
 
   const sql = getDb();
   const rows = (await sql`
-    SELECT id, email, name, role, status
+    SELECT id, email, name, role, status, agent_type, agent_limit
     FROM users
     WHERE id = ${id}
     LIMIT 1
@@ -88,73 +91,7 @@ export default async function EditUserPage({
           </div>
         )}
 
-        <form className="edit-user-form" action={updateUser}>
-          <input name="id" type="hidden" value={user.id} />
-
-          <div className="form-grid">
-            <label className="form-field">
-              <span>Name</span>
-              <input
-                defaultValue={user.name}
-                minLength={2}
-                name="name"
-                required
-                type="text"
-              />
-            </label>
-
-            <label className="form-field">
-              <span>Email address</span>
-              <input
-                autoComplete="email"
-                defaultValue={user.email}
-                name="email"
-                required
-                type="email"
-              />
-            </label>
-
-            <label className="form-field">
-              <span>Role</span>
-              <select defaultValue={user.role} name="role" required>
-                <option value="admin">Admin</option>
-                <option value="partner">Partner</option>
-                <option value="agent">Agent</option>
-                <option value="customer">Customer</option>
-                <option value="support">Support</option>
-              </select>
-            </label>
-
-            <label className="form-field">
-              <span>Status</span>
-              <select defaultValue={user.status} name="status" required>
-                <option value="active">Active</option>
-                <option value="disabled">Disabled</option>
-              </select>
-            </label>
-
-            <label className="form-field form-field-full">
-              <span>New password</span>
-              <input
-                autoComplete="new-password"
-                minLength={8}
-                name="password"
-                placeholder="Leave blank to keep the current password"
-                type="password"
-              />
-              <small>Only enter a value when you want to reset the password.</small>
-            </label>
-          </div>
-
-          <div className="form-actions">
-            <Link className="secondary-link" href="/admin/users">
-              Cancel
-            </Link>
-            <button className="save-button" type="submit">
-              Save changes
-            </button>
-          </div>
-        </form>
+        <EditUserForm user={user} />
       </div>
     </PortalShell>
   );
