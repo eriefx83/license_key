@@ -934,7 +934,7 @@ p {
 }
 
 .license-page-content {
-  width: min(calc(100% - 48px), 1080px);
+  width: min(calc(100% - 48px), 1500px);
   margin: 0 auto;
   padding: 46px 0 64px;
 }
@@ -1026,7 +1026,14 @@ p {
 }
 
 .licenses-table {
-  min-width: 1280px;
+  min-width: 0;
+}
+
+.licenses-table th,
+.licenses-table td {
+  padding-right: 12px;
+  padding-left: 12px;
+  vertical-align: middle;
 }
 
 .license-key-cell {
@@ -1240,6 +1247,12 @@ p {
   filter: brightness(1.05);
 }
 
+@media (max-width: 1180px) {
+  .licenses-table {
+    min-width: 1120px;
+  }
+}
+
 @media (max-width: 640px) {
   .auth-card {
     padding: 32px 24px;
@@ -1288,7 +1301,7 @@ p {
   }
 
   .license-page-content {
-    width: min(calc(100% - 24px), 1080px);
+    width: min(calc(100% - 24px), 1500px);
     padding-top: 32px;
   }
 
