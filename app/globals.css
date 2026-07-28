@@ -1013,6 +1013,19 @@ p {
   white-space: nowrap;
 }
 
+.license-key-with-copy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.copy-license-button-compact {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
