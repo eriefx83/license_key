@@ -226,6 +226,16 @@ p {
   gap: 18px;
 }
 
+.account-details {
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.account-details strong {
+  font-size: 13px;
+}
+
 .account-email {
   color: var(--muted);
   font-size: 13px;
@@ -300,6 +310,10 @@ p {
     align-items: flex-end;
     flex-direction: column;
     gap: 8px;
+  }
+
+  .account-details {
+    justify-items: end;
   }
 
   .account-email {

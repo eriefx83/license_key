@@ -11,11 +11,13 @@ export async function login(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
 
-  if (!validateCredentials(email, password)) {
+  const user = await validateCredentials(email, password);
+
+  if (!user) {
     redirect("/login?error=invalid");
   }
 
-  await setSession(email.trim().toLowerCase());
+  await setSession(user);
   redirect("/dashboard");
 }
 
