@@ -45,32 +45,32 @@ export function PortalShell({
             Dashboard
           </Link>
 
-          {user.role === "admin" && (
-            <>
-              <Link
-                className={`sidebar-link ${
-                  activePage === "licenses" ? "sidebar-link-active" : ""
-                }`}
-                href="/admin/licenses/generate"
-              >
-                <span className="sidebar-link-icon" aria-hidden="true">
-                  L
-                </span>
-                Generate License
-              </Link>
+          {(user.role === "admin" || user.role === "partner") && (
+            <Link
+              className={`sidebar-link ${
+                activePage === "licenses" ? "sidebar-link-active" : ""
+              }`}
+              href="/admin/licenses/generate"
+            >
+              <span className="sidebar-link-icon" aria-hidden="true">
+                L
+              </span>
+              Generate License
+            </Link>
+          )}
 
-              <Link
-                className={`sidebar-link ${
-                  activePage === "users" ? "sidebar-link-active" : ""
-                }`}
-                href="/admin/users"
-              >
-                <span className="sidebar-link-icon" aria-hidden="true">
-                  U
-                </span>
-                Users
-              </Link>
-            </>
+          {user.role === "admin" && (
+            <Link
+              className={`sidebar-link ${
+                activePage === "users" ? "sidebar-link-active" : ""
+              }`}
+              href="/admin/users"
+            >
+              <span className="sidebar-link-icon" aria-hidden="true">
+                U
+              </span>
+              Users
+            </Link>
           )}
         </nav>
 
