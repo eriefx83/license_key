@@ -29,6 +29,7 @@ type ProductRow = {
 
 type GenerateLicensePageProps = {
   searchParams: Promise<{
+    accounts?: string;
     created?: string;
     email?: string;
     error?: string;
@@ -179,13 +180,27 @@ export default async function GenerateLicensePage({
           </div>
         )}
 
-        {params.email === "sent" && (
+        {params.accounts === "added" && params.email === "sent" && (
+          <div className="form-alert form-alert-success" aria-live="polite">
+            MT5 accounts added and the updated license email was sent
+            successfully.
+          </div>
+        )}
+
+        {params.accounts === "added" && params.email === "failed" && (
+          <div className="form-alert form-alert-error" aria-live="polite">
+            MT5 accounts were added, but the updated license email could not be
+            sent. Use Send email to try again.
+          </div>
+        )}
+
+        {params.accounts !== "added" && params.email === "sent" && (
           <div className="form-alert form-alert-success" aria-live="polite">
             License email sent successfully.
           </div>
         )}
 
-        {params.email === "failed" && (
+        {params.accounts !== "added" && params.email === "failed" && (
           <div className="form-alert form-alert-error" aria-live="polite">
             License was saved, but the email could not be sent. Check the
             Resend configuration, then use Send email to try again.
