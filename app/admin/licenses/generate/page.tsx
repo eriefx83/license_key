@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PortalShell } from "@/app/_components/portal-shell";
 import { getSession } from "@/lib/auth";
@@ -31,6 +32,7 @@ type GenerateLicensePageProps = {
     created?: string;
     email?: string;
     error?: string;
+    q?: string;
   }>;
 };
 
@@ -60,28 +62,61 @@ export default async function GenerateLicensePage({
 
   const params = await searchParams;
   const createdId = Number(params.created);
+  const searchQuery = String(params.q ?? "").trim().slice(0, 100);
+  const searchPattern = `%${searchQuery}%`;
   const sql = getDb();
   const [licenseRows, createdLicenseRows, productRows] = await Promise.all([
-    sql`
-      SELECT
-        licenses.id,
-        licenses.license_key,
-        licenses.customer_name,
-        licenses.customer_email,
-        licenses.product_name,
-        licenses.status,
-        licenses.expires_at,
-        licenses.created_at,
-        ARRAY(
-          SELECT license_accounts.mt5_account_number
-          FROM license_accounts
-          WHERE license_accounts.license_id = licenses.id
-          ORDER BY license_accounts.mt5_account_number
-        ) AS mt5_account_numbers
-      FROM licenses
-      ORDER BY licenses.created_at DESC, licenses.id DESC
-      LIMIT 20
-    `,
+    searchQuery
+      ? sql`
+          SELECT
+            licenses.id,
+            licenses.license_key,
+            licenses.customer_name,
+            licenses.customer_email,
+            licenses.product_name,
+            licenses.status,
+            licenses.expires_at,
+            licenses.created_at,
+            ARRAY(
+              SELECT license_accounts.mt5_account_number
+              FROM license_accounts
+              WHERE license_accounts.license_id = licenses.id
+              ORDER BY license_accounts.mt5_account_number
+            ) AS mt5_account_numbers
+          FROM licenses
+          WHERE licenses.license_key ILIKE ${searchPattern}
+             OR licenses.customer_name ILIKE ${searchPattern}
+             OR licenses.customer_email ILIKE ${searchPattern}
+             OR licenses.product_name ILIKE ${searchPattern}
+             OR EXISTS (
+               SELECT 1
+               FROM license_accounts
+               WHERE license_accounts.license_id = licenses.id
+                 AND license_accounts.mt5_account_number ILIKE ${searchPattern}
+             )
+          ORDER BY licenses.created_at DESC, licenses.id DESC
+          LIMIT 100
+        `
+      : sql`
+          SELECT
+            licenses.id,
+            licenses.license_key,
+            licenses.customer_name,
+            licenses.customer_email,
+            licenses.product_name,
+            licenses.status,
+            licenses.expires_at,
+            licenses.created_at,
+            ARRAY(
+              SELECT license_accounts.mt5_account_number
+              FROM license_accounts
+              WHERE license_accounts.license_id = licenses.id
+              ORDER BY license_accounts.mt5_account_number
+            ) AS mt5_account_numbers
+          FROM licenses
+          ORDER BY licenses.created_at DESC, licenses.id DESC
+          LIMIT 20
+        `,
     Number.isInteger(createdId) && createdId > 0
       ? sql`
           SELECT
@@ -260,15 +295,44 @@ export default async function GenerateLicensePage({
           <div className="licenses-panel-heading">
             <div>
               <h3>Recent licenses</h3>
-              <p>Latest 20 generated license keys.</p>
+              <p>
+                {searchQuery
+                  ? `Search results for “${searchQuery}”.`
+                  : "Latest 20 generated license keys."}
+              </p>
             </div>
-            <span>{licenses.length} records</span>
+            <span>
+              {licenses.length} {searchQuery ? "results" : "records"}
+            </span>
           </div>
+
+          <form className="license-search-form" method="get">
+            <label className="visually-hidden" htmlFor="license-search">
+              Search licenses
+            </label>
+            <input
+              defaultValue={searchQuery}
+              id="license-search"
+              name="q"
+              placeholder="Search license key, customer, product or MT5 account"
+              type="search"
+            />
+            <button type="submit">Search</button>
+            {searchQuery && (
+              <Link className="license-search-clear" href="/admin/licenses/generate">
+                Clear
+              </Link>
+            )}
+          </form>
 
           {licenses.length === 0 ? (
             <div className="users-empty">
-              <h3>No licenses yet</h3>
-              <p>Your generated license keys will appear here.</p>
+              <h3>{searchQuery ? "No matching licenses" : "No licenses yet"}</h3>
+              <p>
+                {searchQuery
+                  ? "Try another license key, customer, product or MT5 account."
+                  : "Your generated license keys will appear here."}
+              </p>
             </div>
           ) : (
             <div className="table-scroll">
