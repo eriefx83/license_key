@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { generateLicense } from "./actions";
 import { CopyLicenseButton } from "./copy-license-button";
+import { LicenseActionButtons } from "./license-action-buttons";
 
 export const dynamic = "force-dynamic";
 
@@ -226,6 +227,7 @@ export default async function GenerateLicensePage({
                     <th scope="col">Expires</th>
                     <th scope="col">Status</th>
                     <th scope="col">Created</th>
+                    <th scope="col">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -262,6 +264,13 @@ export default async function GenerateLicensePage({
                       </td>
                       <td className="date-cell">
                         {formatDate(license.created_at)}
+                      </td>
+                      <td className="actions-cell">
+                        <LicenseActionButtons
+                          licenseId={license.id}
+                          licenseKey={license.license_key}
+                          status={license.status}
+                        />
                       </td>
                     </tr>
                   ))}
