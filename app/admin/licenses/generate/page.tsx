@@ -15,6 +15,7 @@ type LicenseRow = {
   expires_at: string | Date | null;
   id: number;
   license_key: string;
+  mt5_account_numbers: string[];
   product_name: string;
   status: string;
 };
@@ -61,31 +62,43 @@ export default async function GenerateLicensePage({
   const [licenseRows, createdLicenseRows, productRows] = await Promise.all([
     sql`
       SELECT
-        id,
-        license_key,
-        customer_name,
-        customer_email,
-        product_name,
-        status,
-        expires_at,
-        created_at
+        licenses.id,
+        licenses.license_key,
+        licenses.customer_name,
+        licenses.customer_email,
+        licenses.product_name,
+        licenses.status,
+        licenses.expires_at,
+        licenses.created_at,
+        ARRAY(
+          SELECT license_accounts.mt5_account_number
+          FROM license_accounts
+          WHERE license_accounts.license_id = licenses.id
+          ORDER BY license_accounts.mt5_account_number
+        ) AS mt5_account_numbers
       FROM licenses
-      ORDER BY created_at DESC, id DESC
+      ORDER BY licenses.created_at DESC, licenses.id DESC
       LIMIT 20
     `,
     Number.isInteger(createdId) && createdId > 0
       ? sql`
           SELECT
-            id,
-            license_key,
-            customer_name,
-            customer_email,
-            product_name,
-            status,
-            expires_at,
-            created_at
+            licenses.id,
+            licenses.license_key,
+            licenses.customer_name,
+            licenses.customer_email,
+            licenses.product_name,
+            licenses.status,
+            licenses.expires_at,
+            licenses.created_at,
+            ARRAY(
+              SELECT license_accounts.mt5_account_number
+              FROM license_accounts
+              WHERE license_accounts.license_id = licenses.id
+              ORDER BY license_accounts.mt5_account_number
+            ) AS mt5_account_numbers
           FROM licenses
-          WHERE id = ${createdId}
+          WHERE licenses.id = ${createdId}
           LIMIT 1
         `
       : Promise.resolve([]),
@@ -117,7 +130,8 @@ export default async function GenerateLicensePage({
 
         {params.error === "invalid" && (
           <div className="form-alert form-alert-error">
-            Please complete all license details correctly.
+            Please complete all license details correctly. MT5 account numbers
+            must contain digits only.
           </div>
         )}
 
@@ -128,6 +142,9 @@ export default async function GenerateLicensePage({
               <strong>{createdLicense.license_key}</strong>
               <span>
                 {createdLicense.customer_name} · {createdLicense.product_name}
+                {" · "}
+                {createdLicense.mt5_account_numbers.length} MT5 account
+                {createdLicense.mt5_account_numbers.length === 1 ? "" : "s"}
               </span>
             </div>
             <CopyLicenseButton value={createdLicense.license_key} />
@@ -188,6 +205,21 @@ export default async function GenerateLicensePage({
                   <option value="lifetime">Lifetime</option>
                 </select>
               </label>
+
+              <label className="form-field form-field-full">
+                <span>MT5 account numbers</span>
+                <textarea
+                  inputMode="numeric"
+                  name="mt5_account_numbers"
+                  placeholder="12345678, 87654321"
+                  required
+                  rows={3}
+                />
+                <small>
+                  Separate multiple account numbers with commas, spaces or new
+                  lines.
+                </small>
+              </label>
             </div>
 
             <div className="form-actions">
@@ -224,6 +256,7 @@ export default async function GenerateLicensePage({
                     <th scope="col">License key</th>
                     <th scope="col">Customer</th>
                     <th scope="col">Product</th>
+                    <th scope="col">MT5 accounts</th>
                     <th scope="col">Expires</th>
                     <th scope="col">Status</th>
                     <th scope="col">Created</th>
@@ -251,6 +284,17 @@ export default async function GenerateLicensePage({
                         </div>
                       </td>
                       <td>{license.product_name}</td>
+                      <td>
+                        {license.mt5_account_numbers.length === 0 ? (
+                          <span className="muted-value">—</span>
+                        ) : (
+                          <div className="mt5-account-list">
+                            {license.mt5_account_numbers.map((accountNumber) => (
+                              <code key={accountNumber}>{accountNumber}</code>
+                            ))}
+                          </div>
+                        )}
+                      </td>
                       <td className="date-cell">
                         {formatDate(license.expires_at)}
                       </td>
