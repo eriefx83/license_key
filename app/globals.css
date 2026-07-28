@@ -1055,7 +1055,6 @@ p {
   box-shadow: 0 0 0 3px rgba(41, 199, 189, 0.12);
 }
 
-.license-search-form button,
 .license-search-clear {
   display: inline-flex;
   min-height: 40px;
@@ -1065,23 +1064,25 @@ p {
   border-radius: 9px;
   font-size: 12px;
   font-weight: 800;
-}
-
-.license-search-form button {
-  border: 0;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #03201e;
+  background: transparent;
 }
 
 .license-search-clear {
   border: 1px solid var(--border);
   color: var(--muted);
-  text-decoration: none;
 }
 
 .license-search-clear:hover {
   border-color: var(--border-strong);
   color: var(--text);
+}
+
+.license-search-status {
+  align-self: center;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .licenses-table {
@@ -1381,7 +1382,7 @@ p {
     padding-left: 14px;
   }
 
-  .license-search-clear {
+  .license-search-form input {
     grid-column: 1 / -1;
   }
 
