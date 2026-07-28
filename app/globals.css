@@ -846,9 +846,9 @@ p {
 }
 
 .form-field input,
-.form-field select {
+.form-field select,
+.form-field textarea {
   width: 100%;
-  height: 48px;
   padding: 0 14px;
   border: 1px solid var(--border);
   border-radius: 11px;
@@ -856,6 +856,18 @@ p {
   background: rgba(4, 16, 18, 0.72);
   color: var(--text);
   font-size: 13px;
+}
+
+.form-field input,
+.form-field select {
+  height: 48px;
+}
+
+.form-field textarea {
+  min-height: 92px;
+  padding-top: 13px;
+  padding-bottom: 13px;
+  resize: vertical;
 }
 
 .form-field select {
@@ -869,12 +881,17 @@ p {
 }
 
 .form-field input:focus,
-.form-field select:focus {
+.form-field select:focus,
+.form-field textarea:focus {
   border-color: var(--accent-strong);
   box-shadow: 0 0 0 3px rgba(41, 199, 189, 0.12);
 }
 
 .form-field input::placeholder {
+  color: #54716f;
+}
+
+.form-field textarea::placeholder {
   color: #54716f;
 }
 
@@ -1009,7 +1026,7 @@ p {
 }
 
 .licenses-table {
-  min-width: 1120px;
+  min-width: 1280px;
 }
 
 .license-key-cell {
@@ -1030,6 +1047,27 @@ p {
   padding: 0 10px;
   border-radius: 8px;
   font-size: 11px;
+}
+
+.mt5-account-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 230px;
+}
+
+.mt5-account-list code {
+  padding: 4px 7px;
+  border: 1px solid rgba(99, 230, 220, 0.14);
+  border-radius: 7px;
+  background: rgba(99, 230, 220, 0.05);
+  color: #b9d7d4;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.muted-value {
+  color: var(--muted);
 }
 
 .license-row-actions {
