@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PortalShell } from "@/app/_components/portal-shell";
 import { getSession } from "@/lib/auth";
@@ -7,6 +6,7 @@ import { generateLicense } from "./actions";
 import { CopyLicenseButton } from "./copy-license-button";
 import { LicenseAccountsManager } from "./license-accounts-manager";
 import { LicenseActionButtons } from "./license-action-buttons";
+import { LicenseLiveSearch } from "./license-live-search";
 
 export const dynamic = "force-dynamic";
 
@@ -306,24 +306,10 @@ export default async function GenerateLicensePage({
             </span>
           </div>
 
-          <form className="license-search-form" method="get">
-            <label className="visually-hidden" htmlFor="license-search">
-              Search licenses
-            </label>
-            <input
-              defaultValue={searchQuery}
-              id="license-search"
-              name="q"
-              placeholder="Search license key, customer, product or MT5 account"
-              type="search"
-            />
-            <button type="submit">Search</button>
-            {searchQuery && (
-              <Link className="license-search-clear" href="/admin/licenses/generate">
-                Clear
-              </Link>
-            )}
-          </form>
+          <LicenseLiveSearch
+            initialQuery={searchQuery}
+            key={searchQuery}
+          />
 
           {licenses.length === 0 ? (
             <div className="users-empty">
