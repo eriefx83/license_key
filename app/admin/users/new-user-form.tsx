@@ -7,8 +7,47 @@ export function NewUserForm() {
   const [role, setRole] = useState("customer");
   const [agentType, setAgentType] = useState("limited");
   const [agentLimit, setAgentLimit] = useState("5");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const isAgent = role === "agent";
   const isLimitedAgent = isAgent && agentType === "limited";
+
+  function generatePassword() {
+    const uppercase = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const lowercase = "abcdefghijkmnopqrstuvwxyz";
+    const numbers = "23456789";
+    const symbols = "!@#$%&*";
+    const allCharacters = uppercase + lowercase + numbers + symbols;
+    const randomIndex = (length: number) => {
+      const value = new Uint32Array(1);
+      crypto.getRandomValues(value);
+      return value[0] % length;
+    };
+    const generated = [
+      uppercase[randomIndex(uppercase.length)],
+      lowercase[randomIndex(lowercase.length)],
+      numbers[randomIndex(numbers.length)],
+      symbols[randomIndex(symbols.length)],
+      ...Array.from(
+        { length: 12 },
+        () => allCharacters[randomIndex(allCharacters.length)],
+      ),
+    ];
+
+    for (let index = generated.length - 1; index > 0; index -= 1) {
+      const swapIndex = randomIndex(index + 1);
+      [generated[index], generated[swapIndex]] = [
+        generated[swapIndex],
+        generated[index],
+      ];
+    }
+
+    const nextPassword = generated.join("");
+    setPassword(nextPassword);
+    setConfirmPassword(nextPassword);
+    setShowPassword(true);
+  }
 
   return (
     <form action={createUser} className="edit-user-form new-user-form">
@@ -43,14 +82,25 @@ export function NewUserForm() {
 
         <label className="form-field">
           <span>Password</span>
-          <input
-            autoComplete="new-password"
-            minLength={8}
-            name="password"
-            placeholder="Minimum 8 characters"
-            required
-            type="password"
-          />
+          <div className="password-generator-field">
+            <input
+              autoComplete="new-password"
+              minLength={8}
+              name="password"
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Minimum 8 characters"
+              required
+              type={showPassword ? "text" : "password"}
+              value={password}
+            />
+            <button
+              className="random-password-button"
+              onClick={generatePassword}
+              type="button"
+            >
+              Generate
+            </button>
+          </div>
         </label>
 
         <label className="form-field">
@@ -59,9 +109,11 @@ export function NewUserForm() {
             autoComplete="new-password"
             minLength={8}
             name="confirm_password"
+            onChange={(event) => setConfirmPassword(event.target.value)}
             placeholder="Enter password again"
             required
             type="password"
+            value={confirmPassword}
           />
         </label>
 
