@@ -232,9 +232,15 @@ export default async function GenerateLicensePage({
                   {licenses.map((license) => (
                     <tr key={license.id}>
                       <td>
-                        <code className="license-key-cell">
-                          {license.license_key}
-                        </code>
+                        <div className="license-key-with-copy">
+                          <code className="license-key-cell">
+                            {license.license_key}
+                          </code>
+                          <CopyLicenseButton
+                            compact
+                            value={license.license_key}
+                          />
+                        </div>
                       </td>
                       <td>
                         <div className="user-identity">
