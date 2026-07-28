@@ -1241,6 +1241,84 @@ p {
   margin-top: 22px;
 }
 
+.license-confirm-modal {
+  width: min(100%, 500px);
+}
+
+.license-confirm-modal-delete {
+  border-color: rgba(255, 170, 165, 0.34);
+}
+
+.license-confirm-modal-revoke {
+  border-color: rgba(255, 197, 120, 0.34);
+}
+
+.license-confirm-body {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  padding: 25px 24px 8px;
+}
+
+.license-confirm-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.license-confirm-modal-delete .license-confirm-icon,
+.license-confirm-modal-delete .eyebrow {
+  color: var(--danger);
+}
+
+.license-confirm-modal-revoke .license-confirm-icon,
+.license-confirm-modal-revoke .eyebrow {
+  color: #ffc578;
+}
+
+.license-confirm-body h4 {
+  margin: 1px 0 8px;
+  color: var(--text);
+  font-size: 16px;
+}
+
+.license-confirm-body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.license-confirm-form {
+  padding: 0 24px 24px;
+}
+
+.license-confirm-submit {
+  min-height: 42px;
+  padding: 0 17px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.license-confirm-revoke-submit {
+  border: 1px solid rgba(255, 197, 120, 0.32);
+  background: rgba(255, 197, 120, 0.12);
+  color: #ffc578;
+}
+
+.license-confirm-delete-submit {
+  border: 1px solid rgba(255, 170, 165, 0.3);
+  background: rgba(255, 170, 165, 0.12);
+  color: var(--danger);
+}
+
 .muted-value {
   color: var(--muted);
 }
