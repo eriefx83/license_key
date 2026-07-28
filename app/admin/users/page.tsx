@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PortalShell } from "@/app/_components/portal-shell";
+import { CreatedUserDetails } from "@/app/admin/users/created-user-details";
 import { NewUserForm } from "@/app/admin/users/new-user-form";
 import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
+import { getNewUserCredentials } from "@/lib/new-user-credentials";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +59,8 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
   }
 
   const query = await searchParams;
+  const createdUserCredentials =
+    query.success === "created" ? await getNewUserCredentials() : null;
   const sql = getDb();
   const users = (await sql`
     SELECT
@@ -76,6 +80,10 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
   return (
     <PortalShell activePage="users" title="Users" user={session}>
       <div className="users-page-content">
+        {createdUserCredentials && (
+          <CreatedUserDetails credentials={createdUserCredentials} />
+        )}
+
         {query.error && errorMessages[query.error] && (
           <div className="form-alert form-alert-error" role="alert">
             {errorMessages[query.error]}
