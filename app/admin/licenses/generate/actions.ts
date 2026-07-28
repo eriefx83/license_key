@@ -10,12 +10,13 @@ const allowedDurations = new Set(["30", "90", "180", "365", "lifetime"]);
 
 type ProductRow = {
   id: number;
+  license_prefix: string;
   name: string;
 };
 
-function createLicenseKey() {
+function createLicenseKey(prefix: string) {
   const value = randomBytes(10).toString("hex").toUpperCase();
-  return `LK-${value.match(/.{1,4}/g)?.join("-")}`;
+  return `${prefix}-${value.match(/.{1,4}/g)?.join("-")}`;
 }
 
 export async function generateLicense(formData: FormData) {
@@ -49,7 +50,7 @@ export async function generateLicense(formData: FormData) {
 
   const sql = getDb();
   const productRows = (await sql`
-    SELECT id, name
+    SELECT id, name, license_prefix
     FROM products
     WHERE id = ${productId}
       AND status = 'active'
@@ -61,7 +62,7 @@ export async function generateLicense(formData: FormData) {
     redirect(`${pageUrl}?error=invalid`);
   }
 
-  const licenseKey = createLicenseKey();
+  const licenseKey = createLicenseKey(product.license_prefix);
   const durationDays = duration === "lifetime" ? null : Number(duration);
   const rows = (await sql`
     INSERT INTO licenses (
