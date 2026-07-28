@@ -19,6 +19,17 @@ function createLicenseKey(prefix: string) {
   return `${prefix}-${value.match(/.{1,4}/g)?.join("-")}`;
 }
 
+function parseMt5AccountNumbers(value: FormDataEntryValue | null) {
+  return [
+    ...new Set(
+      String(value ?? "")
+        .split(/[\s,]+/)
+        .map((accountNumber) => accountNumber.trim())
+        .filter(Boolean),
+    ),
+  ];
+}
+
 async function requireLicenseManager() {
   const session = await getSession();
 
@@ -42,14 +53,9 @@ export async function generateLicense(formData: FormData) {
     .toLowerCase();
   const productId = Number(formData.get("product_id"));
   const duration = String(formData.get("duration") ?? "");
-  const mt5AccountNumbers = [
-    ...new Set(
-      String(formData.get("mt5_account_numbers") ?? "")
-        .split(/[\s,]+/)
-        .map((value) => value.trim())
-        .filter(Boolean),
-    ),
-  ];
+  const mt5AccountNumbers = parseMt5AccountNumbers(
+    formData.get("mt5_account_numbers"),
+  );
   const pageUrl = "/admin/licenses/generate";
 
   if (
@@ -123,6 +129,68 @@ export async function generateLicense(formData: FormData) {
 
   revalidatePath(pageUrl);
   redirect(`${pageUrl}?created=${rows[0].id}`);
+}
+
+export async function addLicenseAccounts(formData: FormData) {
+  await requireLicenseManager();
+
+  const licenseId = Number(formData.get("license_id"));
+  const accountNumbers = parseMt5AccountNumbers(
+    formData.get("new_mt5_account_numbers"),
+  );
+  const pageUrl = "/admin/licenses/generate";
+
+  if (
+    !Number.isInteger(licenseId) ||
+    licenseId < 1 ||
+    accountNumbers.length < 1 ||
+    accountNumbers.length > 50 ||
+    accountNumbers.some((value) => !/^\d{4,20}$/.test(value))
+  ) {
+    redirect(`${pageUrl}?error=accounts`);
+  }
+
+  const sql = getDb();
+  const rows = (await sql`
+    SELECT
+      licenses.id,
+      license_accounts.mt5_account_number
+    FROM licenses
+    LEFT JOIN license_accounts
+      ON license_accounts.license_id = licenses.id
+    WHERE licenses.id = ${licenseId}
+  `) as { id: number; mt5_account_number: string | null }[];
+
+  if (rows.length === 0) {
+    redirect(`${pageUrl}?error=accounts`);
+  }
+
+  const existingAccounts = new Set(
+    rows
+      .map((row) => row.mt5_account_number)
+      .filter((value): value is string => Boolean(value)),
+  );
+  const newAccounts = accountNumbers.filter(
+    (accountNumber) => !existingAccounts.has(accountNumber),
+  );
+
+  if (existingAccounts.size + newAccounts.length > 50) {
+    redirect(`${pageUrl}?error=accounts`);
+  }
+
+  if (newAccounts.length > 0) {
+    await sql`
+      INSERT INTO license_accounts (license_id, mt5_account_number)
+      SELECT ${licenseId}, account.value
+      FROM jsonb_array_elements_text(
+        ${JSON.stringify(newAccounts)}::JSONB
+      ) AS account(value)
+      ON CONFLICT (license_id, mt5_account_number) DO NOTHING
+    `;
+  }
+
+  revalidatePath(pageUrl);
+  redirect(pageUrl);
 }
 
 export async function revokeLicense(formData: FormData) {
