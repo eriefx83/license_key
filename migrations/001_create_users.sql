@@ -5,6 +5,10 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'admin'
     CHECK (role IN ('admin', 'partner', 'agent', 'customer', 'support')),
+  agent_type TEXT NOT NULL DEFAULT 'limited'
+    CHECK (agent_type IN ('limited', 'unlimited')),
+  agent_limit INTEGER NOT NULL DEFAULT 5
+    CHECK (agent_limit >= 1),
   status TEXT NOT NULL DEFAULT 'active'
     CHECK (status IN ('active', 'disabled')),
   last_login_at TIMESTAMPTZ,
