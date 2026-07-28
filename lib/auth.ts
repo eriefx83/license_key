@@ -3,16 +3,30 @@ import {
   timingSafeEqual,
 } from "node:crypto";
 import { cookies } from "next/headers";
+import { getDb } from "@/lib/db";
+import { verifyPassword } from "@/lib/password";
 
 const COOKIE_NAME = "license_admin_session";
 const SESSION_DURATION_SECONDS = 60 * 60 * 8;
 
 type SessionPayload = {
+  userId: number;
   email: string;
+  name: string;
+  role: string;
   expiresAt: number;
 };
 
-function getRequiredEnv(name: "ADMIN_EMAIL" | "ADMIN_PASSWORD" | "SESSION_SECRET") {
+type DatabaseUser = {
+  id: number;
+  email: string;
+  name: string;
+  password_hash: string;
+  role: string;
+  status: string;
+};
+
+function getRequiredEnv(name: "SESSION_SECRET") {
   const value = process.env[name];
 
   if (!value) {
@@ -38,16 +52,55 @@ function sign(value: string) {
     .digest("base64url");
 }
 
-export function validateCredentials(email: string, password: string) {
-  return (
-    safeEqual(email.trim().toLowerCase(), getRequiredEnv("ADMIN_EMAIL").toLowerCase()) &&
-    safeEqual(password, getRequiredEnv("ADMIN_PASSWORD"))
-  );
+export async function validateCredentials(email: string, password: string) {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (!normalizedEmail || !password) {
+    return null;
+  }
+
+  const sql = getDb();
+  const rows = (await sql`
+    SELECT id, email, name, password_hash, role, status
+    FROM users
+    WHERE LOWER(email) = ${normalizedEmail}
+    LIMIT 1
+  `) as Record<string, unknown>[];
+  const user = rows[0] as DatabaseUser | undefined;
+
+  if (
+    !user ||
+    user.status !== "active" ||
+    !(await verifyPassword(password, user.password_hash))
+  ) {
+    return null;
+  }
+
+  await sql`
+    UPDATE users
+    SET last_login_at = NOW(), updated_at = NOW()
+    WHERE id = ${user.id}
+  `;
+
+  return {
+    id: Number(user.id),
+    email: user.email,
+    name: user.name,
+    role: user.role,
+  };
 }
 
-export function createSessionToken(email: string) {
+export function createSessionToken(user: {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+}) {
   const payload: SessionPayload = {
-    email,
+    userId: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
     expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
   };
   const encodedPayload = Buffer.from(JSON.stringify(payload)).toString("base64url");
@@ -55,10 +108,15 @@ export function createSessionToken(email: string) {
   return `${encodedPayload}.${sign(encodedPayload)}`;
 }
 
-export async function setSession(email: string) {
+export async function setSession(user: {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+}) {
   const cookieStore = await cookies();
 
-  cookieStore.set(COOKIE_NAME, createSessionToken(email), {
+  cookieStore.set(COOKIE_NAME, createSessionToken(user), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -91,7 +149,13 @@ export async function getSession(): Promise<SessionPayload | null> {
       Buffer.from(encodedPayload, "base64url").toString("utf8"),
     ) as SessionPayload;
 
-    if (!payload.email || payload.expiresAt <= Date.now()) {
+    if (
+      !payload.userId ||
+      !payload.email ||
+      !payload.name ||
+      !payload.role ||
+      payload.expiresAt <= Date.now()
+    ) {
       return null;
     }
 
