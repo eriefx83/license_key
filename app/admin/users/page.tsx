@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PortalShell } from "@/app/_components/portal-shell";
+import { NewUserForm } from "@/app/admin/users/new-user-form";
 import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 
@@ -18,6 +19,20 @@ type UserRow = {
   created_at: string | Date;
 };
 
+type UsersPageProps = {
+  searchParams: Promise<{
+    error?: string;
+    success?: string;
+  }>;
+};
+
+const errorMessages: Record<string, string> = {
+  agent_limit: "Enter a valid account limit of at least 1.",
+  email: "That email address is already used by another account.",
+  invalid:
+    "Check all fields, make sure both passwords match and use at least 8 characters.",
+};
+
 function formatDate(value: string | Date | null) {
   if (!value) {
     return "Never";
@@ -30,7 +45,7 @@ function formatDate(value: string | Date | null) {
   }).format(new Date(value));
 }
 
-export default async function UsersPage() {
+export default async function UsersPage({ searchParams }: UsersPageProps) {
   const session = await getSession();
 
   if (!session) {
@@ -41,6 +56,7 @@ export default async function UsersPage() {
     redirect("/dashboard");
   }
 
+  const query = await searchParams;
   const sql = getDb();
   const users = (await sql`
     SELECT
@@ -60,6 +76,20 @@ export default async function UsersPage() {
   return (
     <PortalShell activePage="users" title="Users" user={session}>
       <div className="users-page-content">
+        {query.error && errorMessages[query.error] && (
+          <div className="form-alert form-alert-error" role="alert">
+            {errorMessages[query.error]}
+          </div>
+        )}
+
+        {query.success === "created" && (
+          <div className="form-alert form-alert-success" role="status">
+            New user created successfully.
+          </div>
+        )}
+
+        <NewUserForm />
+
         <div className="page-toolbar">
           <div>
             <h2>User list</h2>
