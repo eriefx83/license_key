@@ -7,6 +7,8 @@ import { getDb } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 type UserRow = {
+  agent_limit: number;
+  agent_type: string;
   id: number;
   email: string;
   name: string;
@@ -41,7 +43,16 @@ export default async function UsersPage() {
 
   const sql = getDb();
   const users = (await sql`
-    SELECT id, email, name, role, status, last_login_at, created_at
+    SELECT
+      id,
+      email,
+      name,
+      role,
+      status,
+      agent_type,
+      agent_limit,
+      last_login_at,
+      created_at
     FROM users
     ORDER BY created_at DESC, id DESC
   `) as UserRow[];
@@ -72,6 +83,7 @@ export default async function UsersPage() {
                     <th scope="col">ID</th>
                     <th scope="col">User</th>
                     <th scope="col">Role</th>
+                    <th scope="col">Agent access</th>
                     <th scope="col">Status</th>
                     <th scope="col">Last login</th>
                     <th scope="col">Created</th>
@@ -92,6 +104,18 @@ export default async function UsersPage() {
                       </td>
                       <td>
                         <span className="role-badge">{user.role}</span>
+                      </td>
+                      <td>
+                        {user.role === "agent" ? (
+                          <div className="agent-access">
+                            <strong>{user.agent_type}</strong>
+                            {user.agent_type === "limited" && (
+                              <span>Limit: {user.agent_limit}</span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="not-applicable">—</span>
+                        )}
                       </td>
                       <td>
                         <span
