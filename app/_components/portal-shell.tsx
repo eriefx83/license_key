@@ -3,7 +3,7 @@ import Link from "next/link";
 import { logout } from "@/app/actions";
 
 type PortalShellProps = {
-  activePage: "dashboard" | "users";
+  activePage: "dashboard" | "licenses" | "users";
   children: ReactNode;
   title: string;
   user: {
@@ -46,17 +46,31 @@ export function PortalShell({
           </Link>
 
           {user.role === "admin" && (
-            <Link
-              className={`sidebar-link ${
-                activePage === "users" ? "sidebar-link-active" : ""
-              }`}
-              href="/admin/users"
-            >
-              <span className="sidebar-link-icon" aria-hidden="true">
-                U
-              </span>
-              Users
-            </Link>
+            <>
+              <Link
+                className={`sidebar-link ${
+                  activePage === "licenses" ? "sidebar-link-active" : ""
+                }`}
+                href="/admin/licenses/generate"
+              >
+                <span className="sidebar-link-icon" aria-hidden="true">
+                  L
+                </span>
+                Generate License
+              </Link>
+
+              <Link
+                className={`sidebar-link ${
+                  activePage === "users" ? "sidebar-link-active" : ""
+                }`}
+                href="/admin/users"
+              >
+                <span className="sidebar-link-icon" aria-hidden="true">
+                  U
+                </span>
+                Users
+              </Link>
+            </>
           )}
         </nav>
 
