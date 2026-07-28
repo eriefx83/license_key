@@ -23,7 +23,10 @@ export default async function DashboardPage() {
         </div>
 
         <div className="account-area">
-          <span className="account-email">{session.email}</span>
+          <div className="account-details">
+            <strong>{session.name}</strong>
+            <span className="account-email">{session.email}</span>
+          </div>
           <form action={logout}>
             <button className="logout-button" type="submit">
               Log out
