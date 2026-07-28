@@ -29,6 +29,7 @@ type ProductRow = {
 type GenerateLicensePageProps = {
   searchParams: Promise<{
     created?: string;
+    email?: string;
     error?: string;
   }>;
 };
@@ -140,6 +141,19 @@ export default async function GenerateLicensePage({
           <div className="form-alert form-alert-error">
             Unable to add MT5 accounts. Use numbers only and keep the total at
             50 accounts or fewer.
+          </div>
+        )}
+
+        {params.email === "sent" && (
+          <div className="form-alert form-alert-success" aria-live="polite">
+            License email sent successfully.
+          </div>
+        )}
+
+        {params.email === "failed" && (
+          <div className="form-alert form-alert-error" aria-live="polite">
+            License was saved, but the email could not be sent. Check the
+            Resend configuration, then use Send email to try again.
           </div>
         )}
 
