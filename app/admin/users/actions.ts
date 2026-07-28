@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSession, setSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
+import { setNewUserCredentials } from "@/lib/new-user-credentials";
 import { hashPassword } from "@/lib/password";
 
 const allowedRoles = ["admin", "partner", "agent", "customer", "support"];
@@ -11,6 +12,10 @@ const allowedStatuses = ["active", "disabled"];
 const allowedAgentTypes = ["limited", "unlimited"];
 
 type ExistingUser = {
+  id: number;
+};
+
+type InsertedUser = {
   id: number;
 };
 
@@ -81,7 +86,7 @@ export async function createUser(formData: FormData) {
 
   const passwordHash = await hashPassword(password);
 
-  await sql`
+  const insertedRows = (await sql`
     INSERT INTO users (
       name,
       email,
@@ -100,7 +105,24 @@ export async function createUser(formData: FormData) {
       ${agentType},
       ${agentLimit}
     )
-  `;
+    RETURNING id
+  `) as InsertedUser[];
+  const insertedUser = insertedRows[0];
+
+  if (!insertedUser) {
+    redirect(`${usersUrl}?error=invalid`);
+  }
+
+  await setNewUserCredentials({
+    accountLimit: agentLimit,
+    agentType,
+    email,
+    id: Number(insertedUser.id),
+    name,
+    password,
+    role,
+    status,
+  });
 
   revalidatePath(usersUrl);
   redirect(`${usersUrl}?success=created`);
