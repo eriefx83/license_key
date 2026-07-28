@@ -13,13 +13,10 @@ export function LicenseActionButtons({
   licenseKey,
   status,
 }: LicenseActionButtonsProps) {
-  const revokeAction = revokeLicense.bind(null, licenseId);
-  const deleteAction = deleteLicense.bind(null, licenseId);
-
   return (
     <div className="license-row-actions">
       <form
-        action={revokeAction}
+        action={revokeLicense}
         onSubmit={(event) => {
           if (
             !window.confirm(
@@ -30,6 +27,7 @@ export function LicenseActionButtons({
           }
         }}
       >
+        <input name="license_id" type="hidden" value={licenseId} />
         <button
           className="license-action-button license-revoke-button"
           disabled={status === "revoked"}
@@ -40,7 +38,7 @@ export function LicenseActionButtons({
       </form>
 
       <form
-        action={deleteAction}
+        action={deleteLicense}
         onSubmit={(event) => {
           if (
             !window.confirm(
@@ -51,6 +49,7 @@ export function LicenseActionButtons({
           }
         }}
       >
+        <input name="license_id" type="hidden" value={licenseId} />
         <button
           className="license-action-button license-delete-button"
           type="submit"
