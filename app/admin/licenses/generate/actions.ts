@@ -101,8 +101,10 @@ export async function generateLicense(formData: FormData) {
   redirect(`${pageUrl}?created=${rows[0].id}`);
 }
 
-export async function revokeLicense(licenseId: number) {
+export async function revokeLicense(formData: FormData) {
   await requireLicenseManager();
+
+  const licenseId = Number(formData.get("license_id"));
 
   if (!Number.isInteger(licenseId) || licenseId < 1) {
     redirect("/admin/licenses/generate?error=invalid");
@@ -120,8 +122,10 @@ export async function revokeLicense(licenseId: number) {
   redirect("/admin/licenses/generate");
 }
 
-export async function deleteLicense(licenseId: number) {
+export async function deleteLicense(formData: FormData) {
   await requireLicenseManager();
+
+  const licenseId = Number(formData.get("license_id"));
 
   if (!Number.isInteger(licenseId) || licenseId < 1) {
     redirect("/admin/licenses/generate?error=invalid");
