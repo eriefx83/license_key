@@ -558,6 +558,98 @@ p {
   margin-bottom: 30px;
 }
 
+.created-user-card {
+  margin-bottom: 24px;
+  padding: clamp(22px, 4vw, 30px);
+  border: 1px solid rgba(124, 227, 170, 0.28);
+  border-radius: 18px;
+  background: rgba(124, 227, 170, 0.07);
+  box-shadow: 0 20px 65px rgba(0, 0, 0, 0.18);
+}
+
+.created-user-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.created-user-card-heading span {
+  color: #8be3b3;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.created-user-card-heading h2 {
+  margin: 6px 0;
+  font-size: clamp(22px, 3vw, 28px);
+  letter-spacing: -0.03em;
+}
+
+.created-user-card-heading p,
+.created-user-security-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.copy-user-details-button {
+  min-height: 42px;
+  flex: 0 0 auto;
+  padding: 0 17px;
+  border: 1px solid rgba(124, 227, 170, 0.3);
+  border-radius: 10px;
+  background: rgba(124, 227, 170, 0.11);
+  color: #8be3b3;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.copy-user-details-button:hover {
+  background: rgba(124, 227, 170, 0.17);
+}
+
+.created-user-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.created-user-details-grid > div {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+  padding: 14px;
+  border: 1px solid rgba(124, 227, 170, 0.15);
+  border-radius: 11px;
+  background: rgba(4, 16, 18, 0.42);
+}
+
+.created-user-details-grid span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.created-user-details-grid strong,
+.created-user-details-grid code {
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.created-user-details-grid code {
+  color: #8be3b3;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.created-user-security-note {
+  margin-top: 15px;
+}
+
 .new-user-heading {
   margin-bottom: 24px;
 }
@@ -1551,6 +1643,10 @@ p {
   .licenses-table {
     min-width: 1120px;
   }
+
+  .created-user-details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
@@ -1634,6 +1730,15 @@ p {
   }
 
   .agent-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .created-user-card-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .created-user-details-grid {
     grid-template-columns: 1fr;
   }
 
