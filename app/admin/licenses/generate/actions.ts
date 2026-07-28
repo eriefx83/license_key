@@ -8,6 +8,11 @@ import { getDb } from "@/lib/db";
 
 const allowedDurations = new Set(["30", "90", "180", "365", "lifetime"]);
 
+type ProductRow = {
+  id: number;
+  name: string;
+};
+
 function createLicenseKey() {
   const value = randomBytes(10).toString("hex").toUpperCase();
   return `LK-${value.match(/.{1,4}/g)?.join("-")}`;
@@ -28,27 +33,42 @@ export async function generateLicense(formData: FormData) {
   const customerEmail = String(formData.get("customer_email") ?? "")
     .trim()
     .toLowerCase();
-  const productName = String(formData.get("product_name") ?? "").trim();
+  const productId = Number(formData.get("product_id"));
   const duration = String(formData.get("duration") ?? "");
   const pageUrl = "/admin/licenses/generate";
 
   if (
     customerName.length < 2 ||
     !customerEmail.includes("@") ||
-    productName.length < 2 ||
+    !Number.isInteger(productId) ||
+    productId < 1 ||
     !allowedDurations.has(duration)
   ) {
     redirect(`${pageUrl}?error=invalid`);
   }
 
+  const sql = getDb();
+  const productRows = (await sql`
+    SELECT id, name
+    FROM products
+    WHERE id = ${productId}
+      AND status = 'active'
+    LIMIT 1
+  `) as ProductRow[];
+  const product = productRows[0];
+
+  if (!product) {
+    redirect(`${pageUrl}?error=invalid`);
+  }
+
   const licenseKey = createLicenseKey();
   const durationDays = duration === "lifetime" ? null : Number(duration);
-  const sql = getDb();
   const rows = (await sql`
     INSERT INTO licenses (
       license_key,
       customer_name,
       customer_email,
+      product_id,
       product_name,
       status,
       expires_at,
@@ -58,7 +78,8 @@ export async function generateLicense(formData: FormData) {
       ${licenseKey},
       ${customerName},
       ${customerEmail},
-      ${productName},
+      ${product.id},
+      ${product.name},
       'active',
       CASE
         WHEN ${durationDays}::INTEGER IS NULL THEN NULL
