@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "License Key Portal",
-  description: "Testing portal for license key management.",
+  title: "Xeno Network",
+  description: "Xeno Network license management portal.",
   robots: {
     index: false,
     follow: false,
