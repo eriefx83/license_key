@@ -24,10 +24,10 @@ export function PortalShell({
       <aside className="portal-sidebar">
         <div className="sidebar-brand">
           <span className="brand-mark brand-mark-small" aria-hidden="true">
-            LK
+            XN
           </span>
           <div>
-            <strong>License Key</strong>
+            <strong>Xeno Network</strong>
             <span>Admin Portal</span>
           </div>
         </div>
