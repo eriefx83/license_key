@@ -19,10 +19,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <main className="auth-page">
       <section className="auth-card" aria-labelledby="login-title">
         <div className="brand-mark" aria-hidden="true">
-          LK
+          XN
         </div>
         <p className="eyebrow">Secure Admin Access</p>
-        <h1 id="login-title">License Key Portal</h1>
+        <h1 id="login-title">Xeno Network</h1>
         <p className="subtitle">
           Sign in to access the testing dashboard.
         </p>
