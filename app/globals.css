@@ -554,6 +554,26 @@ p {
   padding: 46px 0 64px;
 }
 
+.new-user-form {
+  margin-bottom: 30px;
+}
+
+.new-user-heading {
+  margin-bottom: 24px;
+}
+
+.new-user-heading h2 {
+  margin-bottom: 7px;
+  font-size: clamp(22px, 3vw, 28px);
+  letter-spacing: -0.03em;
+}
+
+.new-user-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .products-page-content {
   width: min(calc(100% - 48px), 1180px);
   margin: 0 auto;
