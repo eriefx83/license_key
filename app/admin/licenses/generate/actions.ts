@@ -42,6 +42,14 @@ export async function generateLicense(formData: FormData) {
     .toLowerCase();
   const productId = Number(formData.get("product_id"));
   const duration = String(formData.get("duration") ?? "");
+  const mt5AccountNumbers = [
+    ...new Set(
+      String(formData.get("mt5_account_numbers") ?? "")
+        .split(/[\s,]+/)
+        .map((value) => value.trim())
+        .filter(Boolean),
+    ),
+  ];
   const pageUrl = "/admin/licenses/generate";
 
   if (
@@ -49,6 +57,9 @@ export async function generateLicense(formData: FormData) {
     !customerEmail.includes("@") ||
     !Number.isInteger(productId) ||
     productId < 1 ||
+    mt5AccountNumbers.length < 1 ||
+    mt5AccountNumbers.length > 50 ||
+    mt5AccountNumbers.some((value) => !/^\d{4,20}$/.test(value)) ||
     !allowedDurations.has(duration)
   ) {
     redirect(`${pageUrl}?error=invalid`);
@@ -71,30 +82,43 @@ export async function generateLicense(formData: FormData) {
   const licenseKey = createLicenseKey(product.license_prefix);
   const durationDays = duration === "lifetime" ? null : Number(duration);
   const rows = (await sql`
-    INSERT INTO licenses (
-      license_key,
-      customer_name,
-      customer_email,
-      product_id,
-      product_name,
-      status,
-      expires_at,
-      created_by
+    WITH new_license AS (
+      INSERT INTO licenses (
+        license_key,
+        customer_name,
+        customer_email,
+        product_id,
+        product_name,
+        status,
+        expires_at,
+        created_by
+      )
+      VALUES (
+        ${licenseKey},
+        ${customerName},
+        ${customerEmail},
+        ${product.id},
+        ${product.name},
+        'active',
+        CASE
+          WHEN ${durationDays}::INTEGER IS NULL THEN NULL
+          ELSE NOW() + (${durationDays}::INTEGER * INTERVAL '1 day')
+        END,
+        ${session.userId}
+      )
+      RETURNING id
+    ),
+    new_accounts AS (
+      INSERT INTO license_accounts (license_id, mt5_account_number)
+      SELECT new_license.id, account.value
+      FROM new_license
+      CROSS JOIN LATERAL jsonb_array_elements_text(
+        ${JSON.stringify(mt5AccountNumbers)}::JSONB
+      ) AS account(value)
+      RETURNING license_id
     )
-    VALUES (
-      ${licenseKey},
-      ${customerName},
-      ${customerEmail},
-      ${product.id},
-      ${product.name},
-      'active',
-      CASE
-        WHEN ${durationDays}::INTEGER IS NULL THEN NULL
-        ELSE NOW() + (${durationDays}::INTEGER * INTERVAL '1 day')
-      END,
-      ${session.userId}
-    )
-    RETURNING id
+    SELECT id
+    FROM new_license
   `) as { id: number }[];
 
   revalidatePath(pageUrl);
