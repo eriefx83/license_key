@@ -19,7 +19,7 @@ function createLicenseKey(prefix: string) {
   return `${prefix}-${value.match(/.{1,4}/g)?.join("-")}`;
 }
 
-export async function generateLicense(formData: FormData) {
+async function requireLicenseManager() {
   const session = await getSession();
 
   if (!session) {
@@ -29,6 +29,12 @@ export async function generateLicense(formData: FormData) {
   if (session.role !== "admin" && session.role !== "partner") {
     redirect("/dashboard");
   }
+
+  return session;
+}
+
+export async function generateLicense(formData: FormData) {
+  const session = await requireLicenseManager();
 
   const customerName = String(formData.get("customer_name") ?? "").trim();
   const customerEmail = String(formData.get("customer_email") ?? "")
@@ -93,4 +99,40 @@ export async function generateLicense(formData: FormData) {
 
   revalidatePath(pageUrl);
   redirect(`${pageUrl}?created=${rows[0].id}`);
+}
+
+export async function revokeLicense(licenseId: number) {
+  await requireLicenseManager();
+
+  if (!Number.isInteger(licenseId) || licenseId < 1) {
+    redirect("/admin/licenses/generate?error=invalid");
+  }
+
+  const sql = getDb();
+  await sql`
+    UPDATE licenses
+    SET status = 'revoked',
+        updated_at = NOW()
+    WHERE id = ${licenseId}
+  `;
+
+  revalidatePath("/admin/licenses/generate");
+  redirect("/admin/licenses/generate");
+}
+
+export async function deleteLicense(licenseId: number) {
+  await requireLicenseManager();
+
+  if (!Number.isInteger(licenseId) || licenseId < 1) {
+    redirect("/admin/licenses/generate?error=invalid");
+  }
+
+  const sql = getDb();
+  await sql`
+    DELETE FROM licenses
+    WHERE id = ${licenseId}
+  `;
+
+  revalidatePath("/admin/licenses/generate");
+  redirect("/admin/licenses/generate");
 }
