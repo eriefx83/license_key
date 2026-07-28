@@ -20,7 +20,7 @@ export async function generateLicense(formData: FormData) {
     redirect("/login");
   }
 
-  if (session.role !== "admin") {
+  if (session.role !== "admin" && session.role !== "partner") {
     redirect("/dashboard");
   }
 
