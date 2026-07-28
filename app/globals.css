@@ -1066,6 +1066,114 @@ p {
   white-space: nowrap;
 }
 
+.mt5-account-cell {
+  display: grid;
+  justify-items: start;
+  gap: 9px;
+}
+
+.manage-accounts-button {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(99, 230, 220, 0.2);
+  border-radius: 8px;
+  background: rgba(99, 230, 220, 0.06);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.license-modal-backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 8, 10, 0.76);
+  backdrop-filter: blur(8px);
+}
+
+.license-modal {
+  width: min(100%, 560px);
+  max-height: min(720px, calc(100vh - 48px));
+  overflow-y: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  background: #071b1e;
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.55);
+}
+
+.license-modal-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.license-modal-heading .eyebrow {
+  margin: 0 0 6px;
+  color: var(--accent);
+}
+
+.license-modal-heading h3 {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 16px;
+  letter-spacing: 0.03em;
+}
+
+.license-modal-close {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--muted);
+  font-size: 21px;
+}
+
+.license-modal-current {
+  display: grid;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(99, 230, 220, 0.025);
+}
+
+.license-modal-current > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.license-modal-current strong {
+  font-size: 12px;
+}
+
+.license-modal-current span,
+.license-modal-current p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.license-modal-form {
+  padding: 22px 24px 24px;
+}
+
+.license-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 22px;
+}
+
 .muted-value {
   color: var(--muted);
 }
