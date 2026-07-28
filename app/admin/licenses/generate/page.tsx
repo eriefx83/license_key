@@ -18,6 +18,11 @@ type LicenseRow = {
   status: string;
 };
 
+type ProductRow = {
+  id: number;
+  name: string;
+};
+
 type GenerateLicensePageProps = {
   searchParams: Promise<{
     created?: string;
@@ -52,7 +57,7 @@ export default async function GenerateLicensePage({
   const params = await searchParams;
   const createdId = Number(params.created);
   const sql = getDb();
-  const [licenseRows, createdLicenseRows] = await Promise.all([
+  const [licenseRows, createdLicenseRows, productRows] = await Promise.all([
     sql`
       SELECT
         id,
@@ -83,9 +88,16 @@ export default async function GenerateLicensePage({
           LIMIT 1
         `
       : Promise.resolve([]),
+    sql`
+      SELECT id, name
+      FROM products
+      WHERE status = 'active'
+      ORDER BY name ASC, id ASC
+    `,
   ]);
   const licenses = licenseRows as LicenseRow[];
   const createdRows = createdLicenseRows as LicenseRow[];
+  const products = productRows as ProductRow[];
   const createdLicense = createdRows[0];
 
   return (
@@ -147,14 +159,22 @@ export default async function GenerateLicensePage({
               </label>
 
               <label className="form-field">
-                <span>Product name</span>
-                <input
-                  defaultValue="GoldTrap EA"
-                  minLength={2}
-                  name="product_name"
+                <span>Product</span>
+                <select
+                  defaultValue={products[0] ? String(products[0].id) : ""}
+                  disabled={products.length === 0}
+                  name="product_id"
                   required
-                  type="text"
-                />
+                >
+                  {products.length === 0 && (
+                    <option value="">No active products</option>
+                  )}
+                  {products.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.name}
+                    </option>
+                  ))}
+                </select>
               </label>
 
               <label className="form-field">
@@ -170,7 +190,11 @@ export default async function GenerateLicensePage({
             </div>
 
             <div className="form-actions">
-              <button className="save-button" type="submit">
+              <button
+                className="save-button"
+                disabled={products.length === 0}
+                type="submit"
+              >
                 Generate license
               </button>
             </div>
