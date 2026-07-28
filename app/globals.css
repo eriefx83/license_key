@@ -910,6 +910,109 @@ p {
   gap: 18px;
 }
 
+.license-page-content {
+  width: min(calc(100% - 48px), 1080px);
+  margin: 0 auto;
+  padding: 46px 0 64px;
+}
+
+.license-generator-panel,
+.licenses-panel {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(11, 30, 33, 0.72);
+  box-shadow: 0 20px 65px rgba(0, 0, 0, 0.18);
+}
+
+.license-form {
+  padding: clamp(22px, 4vw, 34px);
+}
+
+.generated-license {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding: 20px 22px;
+  border: 1px solid rgba(124, 227, 170, 0.26);
+  border-radius: 14px;
+  background: rgba(124, 227, 170, 0.07);
+}
+
+.generated-license > div {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.generated-license .eyebrow {
+  margin: 0;
+  color: #8be3b3;
+}
+
+.generated-license strong {
+  overflow: hidden;
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(15px, 3vw, 20px);
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.generated-license span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.copy-license-button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid rgba(124, 227, 170, 0.28);
+  border-radius: 10px;
+  background: rgba(124, 227, 170, 0.1);
+  color: #a8edc7;
+  font-weight: 800;
+}
+
+.licenses-panel {
+  margin-top: 24px;
+}
+
+.licenses-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.licenses-panel-heading h3 {
+  margin: 0 0 5px;
+  font-size: 17px;
+}
+
+.licenses-panel-heading p,
+.licenses-panel-heading > span {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.licenses-table {
+  min-width: 970px;
+}
+
+.license-key-cell {
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -983,6 +1086,16 @@ p {
   .edit-user-content {
     width: min(calc(100% - 24px), 820px);
     padding-top: 32px;
+  }
+
+  .license-page-content {
+    width: min(calc(100% - 24px), 1080px);
+    padding-top: 32px;
+  }
+
+  .generated-license {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .edit-page-heading {
