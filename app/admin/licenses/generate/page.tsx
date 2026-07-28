@@ -159,7 +159,7 @@ export default async function GenerateLicensePage({
 
               <label className="form-field">
                 <span>License duration</span>
-                <select defaultValue="30" name="duration" required>
+                <select defaultValue="lifetime" name="duration" required>
                   <option value="30">30 days</option>
                   <option value="90">90 days</option>
                   <option value="180">180 days</option>
