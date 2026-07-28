@@ -1186,13 +1186,18 @@ p {
 }
 
 .license-row-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
   justify-content: flex-end;
   gap: 7px;
 }
 
 .license-row-actions form {
   margin: 0;
+}
+
+.license-email-form {
+  grid-column: 1 / -1;
 }
 
 .license-action-button {
@@ -1207,6 +1212,12 @@ p {
 .license-revoke-button {
   border: 1px solid rgba(255, 197, 120, 0.28);
   color: #ffc578;
+}
+
+.license-email-button {
+  width: 100%;
+  border: 1px solid rgba(99, 230, 220, 0.25);
+  color: var(--accent);
 }
 
 .license-delete-button {
