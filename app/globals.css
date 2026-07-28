@@ -706,6 +706,12 @@ p {
   color: var(--danger);
 }
 
+.status-revoked {
+  border-color: rgba(255, 183, 92, 0.22);
+  background: rgba(255, 183, 92, 0.08);
+  color: #ffc578;
+}
+
 .users-empty {
   padding: 64px 24px;
   text-align: center;
@@ -1003,7 +1009,7 @@ p {
 }
 
 .licenses-table {
-  min-width: 970px;
+  min-width: 1120px;
 }
 
 .license-key-cell {
@@ -1024,6 +1030,40 @@ p {
   padding: 0 10px;
   border-radius: 8px;
   font-size: 11px;
+}
+
+.license-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.license-row-actions form {
+  margin: 0;
+}
+
+.license-action-button {
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.license-revoke-button {
+  border: 1px solid rgba(255, 197, 120, 0.28);
+  color: #ffc578;
+}
+
+.license-delete-button {
+  border: 1px solid rgba(255, 170, 165, 0.25);
+  color: var(--danger);
+}
+
+.license-action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
 }
 
 .form-actions {
