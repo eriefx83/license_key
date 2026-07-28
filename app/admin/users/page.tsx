@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PortalShell } from "@/app/_components/portal-shell";
 import { getSession } from "@/lib/auth";
@@ -74,6 +75,9 @@ export default async function UsersPage() {
                     <th scope="col">Status</th>
                     <th scope="col">Last login</th>
                     <th scope="col">Created</th>
+                    <th scope="col">
+                      <span className="visually-hidden">Actions</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -102,6 +106,14 @@ export default async function UsersPage() {
                       </td>
                       <td className="date-cell">
                         {formatDate(user.created_at)}
+                      </td>
+                      <td className="actions-cell">
+                        <Link
+                          className="edit-button"
+                          href={`/admin/users/${user.id}/edit`}
+                        >
+                          Edit
+                        </Link>
                       </td>
                     </tr>
                   ))}
