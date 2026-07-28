@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS licenses (
   product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
   product_name TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'active'
-    CHECK (status IN ('active', 'disabled')),
+    CHECK (status IN ('active', 'disabled', 'revoked')),
   expires_at TIMESTAMPTZ,
   created_by BIGINT REFERENCES users(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
