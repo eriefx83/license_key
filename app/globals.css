@@ -35,7 +35,8 @@ body {
 }
 
 button,
-input {
+input,
+a {
   font: inherit;
 }
 
@@ -295,6 +296,215 @@ p {
   line-height: 1.6;
 }
 
+.dashboard-content,
+.users-page-content {
+  width: min(calc(100% - 40px), 1180px);
+  margin: 0 auto;
+}
+
+.admin-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 22px;
+  margin-top: clamp(48px, 10vh, 100px);
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(12, 32, 35, 0.96), rgba(8, 24, 26, 0.9));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+}
+
+.admin-card-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 15px;
+  background: rgba(99, 230, 220, 0.08);
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.admin-card h2 {
+  margin-bottom: 8px;
+  font-size: 22px;
+}
+
+.admin-card p:not(.eyebrow) {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.primary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #03201e;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.users-page-content {
+  padding: 46px 0 64px;
+}
+
+.page-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.page-toolbar h2 {
+  margin-bottom: 7px;
+  font-size: clamp(26px, 4vw, 34px);
+  letter-spacing: -0.035em;
+}
+
+.page-toolbar p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.users-panel {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(11, 30, 33, 0.72);
+  box-shadow: 0 20px 65px rgba(0, 0, 0, 0.2);
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  min-width: 850px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.users-table th {
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5, 20, 22, 0.68);
+  color: #789b98;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.users-table td {
+  padding: 17px 18px;
+  border-bottom: 1px solid rgba(95, 220, 213, 0.09);
+  color: #cbe0de;
+  font-size: 13px;
+}
+
+.users-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.users-table tbody tr:hover {
+  background: rgba(99, 230, 220, 0.035);
+}
+
+.user-id {
+  color: #60817e !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.user-identity {
+  display: grid;
+  gap: 4px;
+}
+
+.user-identity strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.user-identity span,
+.date-cell {
+  color: var(--muted);
+}
+
+.role-badge,
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 750;
+  text-transform: capitalize;
+}
+
+.role-badge {
+  border: 1px solid rgba(99, 230, 220, 0.2);
+  background: rgba(99, 230, 220, 0.08);
+  color: var(--accent);
+}
+
+.status-badge {
+  gap: 7px;
+  border: 1px solid rgba(124, 227, 170, 0.18);
+  background: rgba(124, 227, 170, 0.07);
+  color: #8be3b3;
+}
+
+.status-badge > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-disabled {
+  border-color: rgba(255, 170, 165, 0.2);
+  background: rgba(255, 170, 165, 0.07);
+  color: var(--danger);
+}
+
+.users-empty {
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.users-empty h3 {
+  margin: 0 0 8px;
+}
+
+.users-empty p {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
 @media (max-width: 640px) {
   .auth-card {
     padding: 32px 24px;
@@ -320,5 +530,20 @@ p {
     max-width: 145px;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .admin-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 18px;
+    padding: 24px;
+  }
+
+  .admin-card .primary-link {
+    grid-column: 1 / -1;
+  }
+
+  .users-page-content {
+    width: min(calc(100% - 24px), 1180px);
+    padding-top: 32px;
   }
 }
