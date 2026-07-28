@@ -113,7 +113,7 @@ export async function generateLicense(formData: FormData) {
         END,
         ${session.userId}
       )
-      RETURNING id
+      RETURNING id, expires_at
     ),
     new_accounts AS (
       INSERT INTO license_accounts (license_id, mt5_account_number)
