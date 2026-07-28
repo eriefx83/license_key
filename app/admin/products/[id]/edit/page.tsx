@@ -123,7 +123,6 @@ export default async function EditProductPage({
                 required
                 type="text"
               />
-              <small>Lowercase letters, numbers and hyphens only.</small>
             </label>
 
             <label className="form-field">
