@@ -14,7 +14,7 @@ type ExistingUser = {
   id: number;
 };
 
-export async function updateUser(formData: FormData) {
+async function requireAdmin() {
   const session = await getSession();
 
   if (!session) {
@@ -24,6 +24,90 @@ export async function updateUser(formData: FormData) {
   if (session.role !== "admin") {
     redirect("/dashboard");
   }
+
+  return session;
+}
+
+export async function createUser(formData: FormData) {
+  await requireAdmin();
+
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirm_password") ?? "");
+  const role = String(formData.get("role") ?? "");
+  const status = String(formData.get("status") ?? "");
+  const submittedAgentType = String(formData.get("agent_type") ?? "");
+  const submittedAgentLimit = Number(formData.get("agent_limit") ?? 5);
+  const agentType =
+    role === "agent" && allowedAgentTypes.includes(submittedAgentType)
+      ? submittedAgentType
+      : "limited";
+  const agentLimit =
+    role === "agent" && agentType === "limited" ? submittedAgentLimit : 5;
+  const usersUrl = "/admin/users";
+
+  if (
+    name.length < 2 ||
+    !email.includes("@") ||
+    password.length < 8 ||
+    password !== confirmPassword ||
+    !allowedRoles.includes(role) ||
+    !allowedStatuses.includes(status)
+  ) {
+    redirect(`${usersUrl}?error=invalid`);
+  }
+
+  if (
+    role === "agent" &&
+    (!allowedAgentTypes.includes(submittedAgentType) ||
+      (agentType === "limited" &&
+        (!Number.isInteger(agentLimit) || agentLimit < 1)))
+  ) {
+    redirect(`${usersUrl}?error=agent_limit`);
+  }
+
+  const sql = getDb();
+  const duplicateRows = (await sql`
+    SELECT id
+    FROM users
+    WHERE LOWER(email) = ${email}
+    LIMIT 1
+  `) as ExistingUser[];
+
+  if (duplicateRows[0]) {
+    redirect(`${usersUrl}?error=email`);
+  }
+
+  const passwordHash = await hashPassword(password);
+
+  await sql`
+    INSERT INTO users (
+      name,
+      email,
+      password_hash,
+      role,
+      status,
+      agent_type,
+      agent_limit
+    )
+    VALUES (
+      ${name},
+      ${email},
+      ${passwordHash},
+      ${role},
+      ${status},
+      ${agentType},
+      ${agentLimit}
+    )
+  `;
+
+  revalidatePath(usersUrl);
+  redirect(`${usersUrl}?success=created`);
+}
+
+export async function updateUser(formData: FormData) {
+  const session = await requireAdmin();
 
   const id = Number(formData.get("id"));
   const name = String(formData.get("name") ?? "").trim();
