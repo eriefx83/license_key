@@ -8,6 +8,7 @@ import { hashPassword } from "@/lib/password";
 
 const allowedRoles = ["admin", "partner", "agent", "customer", "support"];
 const allowedStatuses = ["active", "disabled"];
+const allowedAgentTypes = ["limited", "unlimited"];
 
 type ExistingUser = {
   id: number;
@@ -30,6 +31,14 @@ export async function updateUser(formData: FormData) {
   const role = String(formData.get("role") ?? "");
   const status = String(formData.get("status") ?? "");
   const password = String(formData.get("password") ?? "");
+  const submittedAgentType = String(formData.get("agent_type") ?? "");
+  const submittedAgentLimit = Number(formData.get("agent_limit") ?? 5);
+  const agentType =
+    role === "agent" && allowedAgentTypes.includes(submittedAgentType)
+      ? submittedAgentType
+      : "limited";
+  const agentLimit =
+    role === "agent" && agentType === "limited" ? submittedAgentLimit : 5;
   const editUrl = `/admin/users/${id}/edit`;
 
   if (
@@ -49,6 +58,15 @@ export async function updateUser(formData: FormData) {
 
   if (password && password.length < 8) {
     redirect(`${editUrl}?error=password`);
+  }
+
+  if (
+    role === "agent" &&
+    (!allowedAgentTypes.includes(submittedAgentType) ||
+      (agentType === "limited" &&
+        (!Number.isInteger(agentLimit) || agentLimit < 1)))
+  ) {
+    redirect(`${editUrl}?error=agent_limit`);
   }
 
   const sql = getDb();
@@ -84,6 +102,8 @@ export async function updateUser(formData: FormData) {
       email = ${email},
       role = ${role},
       status = ${status},
+      agent_type = ${agentType},
+      agent_limit = ${agentLimit},
       password_hash = COALESCE(${passwordHash}, password_hash),
       updated_at = NOW()
     WHERE id = ${id}
