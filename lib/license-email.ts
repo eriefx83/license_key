@@ -56,7 +56,7 @@ export async function sendLicenseEmail(
   const textAccounts = details.mt5AccountNumbers.join(", ");
   const from =
     process.env.RESEND_FROM_EMAIL ??
-    "License Key Portal <onboarding@resend.dev>";
+    "Xeno Network <onboarding@resend.dev>";
 
   try {
     const response = await fetch("https://api.resend.com/emails", {
@@ -89,7 +89,7 @@ export async function sendLicenseEmail(
               <div style="padding:36px 16px">
                 <div style="max-width:580px;margin:0 auto;overflow:hidden;border:1px solid #1f5554;border-radius:18px;background:#0b1e21">
                   <div style="padding:28px 30px;border-bottom:1px solid #183d3d;background:#0c2023">
-                    <div style="color:#63e6dc;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase">License Key Portal</div>
+                    <div style="color:#63e6dc;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase">Xeno Network</div>
                     <h1 style="margin:10px 0 0;color:#effcfb;font-size:26px">Your license is ready</h1>
                   </div>
                   <div style="padding:30px">
