@@ -2,17 +2,20 @@ CREATE TABLE IF NOT EXISTS products (
   id BIGSERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   code TEXT NOT NULL UNIQUE,
+  license_prefix TEXT NOT NULL UNIQUE
+    CHECK (license_prefix ~ '^[A-Z0-9]{2,12}$'),
   status TEXT NOT NULL DEFAULT 'active'
     CHECK (status IN ('active', 'disabled')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-INSERT INTO products (name, code, status)
-VALUES ('GoldTrap', 'goldtrap', 'active')
+INSERT INTO products (name, code, license_prefix, status)
+VALUES ('GoldTrap', 'goldtrap', 'GTEA', 'active')
 ON CONFLICT (code) DO UPDATE
 SET
   name = EXCLUDED.name,
+  license_prefix = EXCLUDED.license_prefix,
   status = EXCLUDED.status,
   updated_at = NOW();
 
