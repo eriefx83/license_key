@@ -3,6 +3,7 @@ import { PortalShell } from "@/app/_components/portal-shell";
 import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { addProduct } from "./actions";
+import { ProductActionButtons } from "./product-action-buttons";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +79,12 @@ export default async function ProductsPage({
           </div>
         )}
 
+        {params.success === "deleted" && (
+          <div className="form-alert form-alert-success">
+            Product deleted successfully.
+          </div>
+        )}
+
         {params.error === "invalid" && (
           <div className="form-alert form-alert-error">
             Please complete all product details correctly.
@@ -93,6 +100,12 @@ export default async function ProductsPage({
         {params.error === "prefix" && (
           <div className="form-alert form-alert-error">
             That license prefix is already in use.
+          </div>
+        )}
+
+        {params.error === "used" && (
+          <div className="form-alert form-alert-error">
+            This product cannot be deleted while it has generated licenses.
           </div>
         )}
 
@@ -181,6 +194,7 @@ export default async function ProductsPage({
                     <th scope="col">Total licenses</th>
                     <th scope="col">Status</th>
                     <th scope="col">Created</th>
+                    <th scope="col">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -215,6 +229,13 @@ export default async function ProductsPage({
                       </td>
                       <td className="date-cell">
                         {formatDate(product.created_at)}
+                      </td>
+                      <td className="actions-cell">
+                        <ProductActionButtons
+                          licenseCount={product.license_count}
+                          productId={product.id}
+                          productName={product.name}
+                        />
                       </td>
                     </tr>
                   ))}
