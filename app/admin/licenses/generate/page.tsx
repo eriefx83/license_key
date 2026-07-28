@@ -45,7 +45,7 @@ export default async function GenerateLicensePage({
     redirect("/login");
   }
 
-  if (session.role !== "admin") {
+  if (session.role !== "admin" && session.role !== "partner") {
     redirect("/dashboard");
   }
 
