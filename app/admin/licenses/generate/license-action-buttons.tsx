@@ -1,6 +1,10 @@
 "use client";
 
-import { deleteLicense, revokeLicense } from "./actions";
+import {
+  deleteLicense,
+  resendLicenseEmail,
+  revokeLicense,
+} from "./actions";
 
 type LicenseActionButtonsProps = {
   licenseId: number;
@@ -15,6 +19,16 @@ export function LicenseActionButtons({
 }: LicenseActionButtonsProps) {
   return (
     <div className="license-row-actions">
+      <form action={resendLicenseEmail} className="license-email-form">
+        <input name="license_id" type="hidden" value={licenseId} />
+        <button
+          className="license-action-button license-email-button"
+          type="submit"
+        >
+          Send email
+        </button>
+      </form>
+
       <form
         action={revokeLicense}
         onSubmit={(event) => {
