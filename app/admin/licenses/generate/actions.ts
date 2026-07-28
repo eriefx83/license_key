@@ -264,9 +264,55 @@ export async function addLicenseAccounts(formData: FormData) {
       ) AS account(value)
       ON CONFLICT (license_id, mt5_account_number) DO NOTHING
     `;
+
+    const licenseRows = (await sql`
+      SELECT
+        licenses.id,
+        licenses.license_key,
+        licenses.customer_name,
+        licenses.customer_email,
+        licenses.product_name,
+        licenses.expires_at,
+        ARRAY(
+          SELECT license_accounts.mt5_account_number
+          FROM license_accounts
+          WHERE license_accounts.license_id = licenses.id
+          ORDER BY license_accounts.mt5_account_number
+        ) AS mt5_account_numbers
+      FROM licenses
+      WHERE licenses.id = ${licenseId}
+      LIMIT 1
+    `) as {
+      customer_email: string;
+      customer_name: string;
+      expires_at: string | Date | null;
+      id: number;
+      license_key: string;
+      mt5_account_numbers: string[];
+      product_name: string;
+    }[];
+    const license = licenseRows[0];
+
+    if (!license) {
+      redirect(`${pageUrl}?error=accounts`);
+    }
+
+    const emailResult = await sendLicenseEmail({
+      customerEmail: license.customer_email,
+      customerName: license.customer_name,
+      expiresAt: license.expires_at,
+      licenseId: license.id,
+      licenseKey: license.license_key,
+      mt5AccountNumbers: license.mt5_account_numbers,
+      productName: license.product_name,
+    });
+
+    revalidatePath(pageUrl);
+    redirect(
+      `${pageUrl}?accounts=added&email=${emailResult.ok ? "sent" : "failed"}`,
+    );
   }
 
-  revalidatePath(pageUrl);
   redirect(pageUrl);
 }
 
