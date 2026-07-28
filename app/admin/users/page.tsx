@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { logout } from "@/app/actions";
+import { PortalShell } from "@/app/_components/portal-shell";
 import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 
@@ -47,37 +46,10 @@ export default async function UsersPage() {
   `) as UserRow[];
 
   return (
-    <main className="dashboard-page">
-      <header className="dashboard-header">
-        <div className="dashboard-brand">
-          <span className="brand-mark brand-mark-small" aria-hidden="true">
-            LK
-          </span>
-          <div>
-            <p className="eyebrow">Admin Portal</p>
-            <h1>Users</h1>
-          </div>
-        </div>
-
-        <div className="account-area">
-          <div className="account-details">
-            <strong>{session.name}</strong>
-            <span className="account-email">{session.email}</span>
-          </div>
-          <form action={logout}>
-            <button className="logout-button" type="submit">
-              Log out
-            </button>
-          </form>
-        </div>
-      </header>
-
+    <PortalShell activePage="users" title="Users" user={session}>
       <div className="users-page-content">
         <div className="page-toolbar">
           <div>
-            <Link className="back-link" href="/dashboard">
-              ← Dashboard
-            </Link>
             <h2>User list</h2>
             <p>
               {users.length} {users.length === 1 ? "user" : "users"} registered
@@ -139,6 +111,6 @@ export default async function UsersPage() {
           )}
         </section>
       </div>
-    </main>
+    </PortalShell>
   );
 }
