@@ -10,6 +10,7 @@ type ProductRow = {
   code: string;
   created_at: string | Date;
   id: number;
+  license_count: number;
   license_prefix: string;
   name: string;
   status: string;
@@ -45,9 +46,20 @@ export default async function ProductsPage({
   const params = await searchParams;
   const sql = getDb();
   const productRows = (await sql`
-    SELECT id, name, code, license_prefix, status, created_at
+    SELECT
+      products.id,
+      products.name,
+      products.code,
+      products.license_prefix,
+      products.status,
+      products.created_at,
+      (
+        SELECT COUNT(*)::INTEGER
+        FROM licenses
+        WHERE licenses.product_id = products.id
+      ) AS license_count
     FROM products
-    ORDER BY created_at DESC, id DESC
+    ORDER BY products.created_at DESC, products.id DESC
   `) as ProductRow[];
 
   return (
@@ -166,6 +178,7 @@ export default async function ProductsPage({
                     <th scope="col">Product</th>
                     <th scope="col">Code</th>
                     <th scope="col">License prefix</th>
+                    <th scope="col">Total licenses</th>
                     <th scope="col">Status</th>
                     <th scope="col">Created</th>
                   </tr>
@@ -185,6 +198,11 @@ export default async function ProductsPage({
                       <td>
                         <span className="product-prefix">
                           {product.license_prefix}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="product-license-count">
+                          {product.license_count}
                         </span>
                       </td>
                       <td>
