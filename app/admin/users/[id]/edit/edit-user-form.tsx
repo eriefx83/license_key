@@ -108,7 +108,6 @@ export function EditUserForm({ user }: EditUserFormProps) {
                     type="number"
                     value={agentLimit}
                   />
-                  <small>Default limit is 5.</small>
                 </label>
               )}
             </div>
