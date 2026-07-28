@@ -98,7 +98,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
 
               {isLimitedAgent && (
                 <label className="form-field">
-                  <span>Agent limit</span>
+                  <span>Account limit</span>
                   <input
                     inputMode="numeric"
                     min={1}
