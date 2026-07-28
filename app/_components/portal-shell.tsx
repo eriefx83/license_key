@@ -110,7 +110,7 @@ export function PortalShell({
       <section className="portal-main">
         <header className="portal-header">
           <div>
-            <p className="eyebrow">Testing Portal</p>
+            <p className="eyebrow">Xeno Network</p>
             <h1>{title}</h1>
           </div>
           <span className="header-role">{user.role}</span>
