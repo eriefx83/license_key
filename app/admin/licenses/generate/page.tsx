@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { generateLicense } from "./actions";
 import { CopyLicenseButton } from "./copy-license-button";
+import { LicenseAccountsManager } from "./license-accounts-manager";
 import { LicenseActionButtons } from "./license-action-buttons";
 
 export const dynamic = "force-dynamic";
@@ -132,6 +133,13 @@ export default async function GenerateLicensePage({
           <div className="form-alert form-alert-error">
             Please complete all license details correctly. MT5 account numbers
             must contain digits only.
+          </div>
+        )}
+
+        {params.error === "accounts" && (
+          <div className="form-alert form-alert-error">
+            Unable to add MT5 accounts. Use numbers only and keep the total at
+            50 accounts or fewer.
           </div>
         )}
 
@@ -285,15 +293,26 @@ export default async function GenerateLicensePage({
                       </td>
                       <td>{license.product_name}</td>
                       <td>
-                        {license.mt5_account_numbers.length === 0 ? (
-                          <span className="muted-value">—</span>
-                        ) : (
-                          <div className="mt5-account-list">
-                            {license.mt5_account_numbers.map((accountNumber) => (
-                              <code key={accountNumber}>{accountNumber}</code>
-                            ))}
-                          </div>
-                        )}
+                        <div className="mt5-account-cell">
+                          {license.mt5_account_numbers.length === 0 ? (
+                            <span className="muted-value">—</span>
+                          ) : (
+                            <div className="mt5-account-list">
+                              {license.mt5_account_numbers.map(
+                                (accountNumber) => (
+                                  <code key={accountNumber}>
+                                    {accountNumber}
+                                  </code>
+                                ),
+                              )}
+                            </div>
+                          )}
+                          <LicenseAccountsManager
+                            accountNumbers={license.mt5_account_numbers}
+                            licenseId={license.id}
+                            licenseKey={license.license_key}
+                          />
+                        </div>
                       </td>
                       <td className="date-cell">
                         {formatDate(license.expires_at)}
