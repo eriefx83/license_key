@@ -15,7 +15,7 @@ type ProductRow = {
 };
 
 function createLicenseKey(prefix: string) {
-  const value = randomBytes(10).toString("hex").toUpperCase();
+  const value = randomBytes(6).toString("hex").toUpperCase();
   return `${prefix}-${value.match(/.{1,4}/g)?.join("-")}`;
 }
 
