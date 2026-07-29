@@ -10,7 +10,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const session = await getSession();
 
   if (session) {
-    redirect("/dashboard");
+    redirect(
+      session.role === "admin" || session.role === "partner"
+        ? "/admin/licenses/generate"
+        : "/dashboard",
+    );
   }
 
   const { error } = await searchParams;
@@ -24,7 +28,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <p className="eyebrow">Secure Admin Access</p>
         <h1 id="login-title">Xeno Network</h1>
         <p className="subtitle">
-          Sign in to access the testing dashboard.
+          Sign in to access the license management portal.
         </p>
 
         {error === "invalid" ? (
