@@ -2,8 +2,16 @@
 
 import { useState } from "react";
 import { createUser } from "@/app/admin/users/actions";
+import {
+  ProductAccessSelector,
+  type ProductAccessOption,
+} from "@/app/admin/users/product-access-selector";
 
-export function NewUserForm() {
+type NewUserFormProps = {
+  products: ProductAccessOption[];
+};
+
+export function NewUserForm({ products }: NewUserFormProps) {
   const [role, setRole] = useState("customer");
   const [agentType, setAgentType] = useState("limited");
   const [agentLimit, setAgentLimit] = useState("5");
@@ -180,6 +188,8 @@ export function NewUserForm() {
             </div>
           </div>
         )}
+
+        <ProductAccessSelector products={products} />
       </div>
 
       <div className="form-actions">
