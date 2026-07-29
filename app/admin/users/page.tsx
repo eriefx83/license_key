@@ -2,9 +2,10 @@ import { redirect } from "next/navigation";
 import { PortalShell } from "@/app/_components/portal-shell";
 import { CreatedUserDetails } from "@/app/admin/users/created-user-details";
 import { NewUserForm } from "@/app/admin/users/new-user-form";
+import type { ProductAccessOption } from "@/app/admin/users/product-access-selector";
 import { UserActionButtons } from "@/app/admin/users/user-action-buttons";
 import { getSession } from "@/lib/auth";
-import { getDb } from "@/lib/db";
+import { ensureUserProductAccessTable, getDb } from "@/lib/db";
 import { getNewUserCredentials } from "@/lib/new-user-credentials";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +34,7 @@ const errorMessages: Record<string, string> = {
   email: "That email address is already used by another account.",
   invalid:
     "Check all fields, make sure both passwords match and use at least 8 characters.",
+  product_access: "One or more selected products are no longer available.",
   self_delete: "You cannot delete the admin account you are currently using.",
 };
 
@@ -59,24 +61,35 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
     redirect("/dashboard");
   }
 
+  await ensureUserProductAccessTable();
+
   const query = await searchParams;
   const createdUserCredentials =
     query.success === "created" ? await getNewUserCredentials() : null;
   const sql = getDb();
-  const users = (await sql`
-    SELECT
-      id,
-      email,
-      name,
-      role,
-      status,
-      agent_type,
-      agent_limit,
-      last_login_at,
-      created_at
-    FROM users
-    ORDER BY created_at DESC, id DESC
-  `) as UserRow[];
+  const [userRows, productRows] = await Promise.all([
+    sql`
+      SELECT
+        id,
+        email,
+        name,
+        role,
+        status,
+        agent_type,
+        agent_limit,
+        last_login_at,
+        created_at
+      FROM users
+      ORDER BY created_at DESC, id DESC
+    `,
+    sql`
+      SELECT id, name, status
+      FROM products
+      ORDER BY name ASC, id ASC
+    `,
+  ]);
+  const users = userRows as UserRow[];
+  const products = productRows as ProductAccessOption[];
 
   return (
     <PortalShell activePage="users" title="Users" user={session}>
@@ -103,7 +116,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
           </div>
         )}
 
-        <NewUserForm />
+        <NewUserForm products={products} />
 
         <div className="page-toolbar">
           <div>
