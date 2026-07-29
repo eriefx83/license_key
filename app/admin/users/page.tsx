@@ -58,7 +58,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
   }
 
   if (session.role !== "admin") {
-    redirect("/dashboard");
+    redirect("/admin/licenses/generate");
   }
 
   await ensureUserProductAccessTable();
