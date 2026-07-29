@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import { getDb } from "@/lib/db";
+import { ensureUserProductAccessTable, getDb } from "@/lib/db";
 import { sendLicenseEmail } from "@/lib/license-email";
 
 const allowedDurations = new Set(["30", "90", "180", "365", "lifetime"]);
@@ -42,6 +42,8 @@ async function requireLicenseManager() {
     redirect("/dashboard");
   }
 
+  await ensureUserProductAccessTable();
+
   return session;
 }
 
@@ -74,10 +76,19 @@ export async function generateLicense(formData: FormData) {
 
   const sql = getDb();
   const productRows = (await sql`
-    SELECT id, name, license_prefix
+    SELECT products.id, products.name, products.license_prefix
     FROM products
-    WHERE id = ${productId}
-      AND status = 'active'
+    WHERE products.id = ${productId}
+      AND products.status = 'active'
+      AND (
+        ${session.role} = 'admin'
+        OR EXISTS (
+          SELECT 1
+          FROM user_product_access
+          WHERE user_product_access.user_id = ${session.userId}
+            AND user_product_access.product_id = products.id
+        )
+      )
     LIMIT 1
   `) as ProductRow[];
   const product = productRows[0];
