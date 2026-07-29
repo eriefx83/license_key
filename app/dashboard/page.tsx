@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { PortalShell } from "@/app/_components/portal-shell";
+import { logout } from "@/app/actions";
 import { getSession } from "@/lib/auth";
 
 export default async function DashboardPage() {
@@ -10,35 +9,25 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  if (session.role === "admin" || session.role === "partner") {
+    redirect("/admin/licenses/generate");
+  }
+
   return (
-    <PortalShell activePage="dashboard" title="Dashboard" user={session}>
-      <div className="dashboard-content dashboard-content-shell">
-        {session.role === "admin" ? (
-          <section className="admin-card" aria-labelledby="admin-users-title">
-            <div className="admin-card-icon" aria-hidden="true">
-              U
-            </div>
-            <div>
-              <p className="eyebrow">Admin</p>
-              <h2 id="admin-users-title">User management</h2>
-              <p>View every registered user and their latest account status.</p>
-            </div>
-            <Link className="primary-link" href="/admin/users">
-              View users
-            </Link>
-          </section>
-        ) : (
-          <section className="empty-dashboard" aria-labelledby="empty-title">
-            <div className="empty-icon" aria-hidden="true">
-              +
-            </div>
-            <h2 id="empty-title">Your dashboard is ready</h2>
-            <p>
-              License management features will be added here in the next phase.
-            </p>
-          </section>
-        )}
-      </div>
-    </PortalShell>
+    <main className="auth-page">
+      <section className="auth-card" aria-labelledby="access-title">
+        <div className="brand-mark" aria-hidden="true">
+          XN
+        </div>
+        <p className="eyebrow">Xeno Network</p>
+        <h1 id="access-title">Portal access unavailable</h1>
+        <p className="subtitle">
+          Access for the {session.role} role will be added in a later phase.
+        </p>
+        <form action={logout} className="login-form">
+          <button type="submit">Log out</button>
+        </form>
+      </section>
+    </main>
   );
 }
