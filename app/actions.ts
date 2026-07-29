@@ -10,6 +10,7 @@ import {
 export async function login(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
+  const rememberMe = formData.get("remember_me") === "on";
 
   const user = await validateCredentials(email, password);
 
@@ -17,7 +18,7 @@ export async function login(formData: FormData) {
     redirect("/login?error=invalid");
   }
 
-  await setSession(user);
+  await setSession(user, rememberMe);
   redirect("/dashboard");
 }
 
