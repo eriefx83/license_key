@@ -1187,6 +1187,100 @@ p {
   gap: 18px;
 }
 
+.product-access-selector {
+  min-width: 0;
+  margin: 0;
+  padding: 22px;
+  border: 1px solid rgba(95, 220, 213, 0.14);
+  border-radius: 14px;
+  background: rgba(5, 20, 22, 0.38);
+}
+
+.product-access-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.product-access-heading > div > strong {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.product-access-heading p,
+.product-access-empty {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.product-access-select-all,
+.product-access-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.product-access-select-all {
+  flex: 0 0 auto;
+  gap: 8px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.product-access-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.product-access-option {
+  gap: 11px;
+  min-height: 58px;
+  padding: 11px 13px;
+  border: 1px solid rgba(95, 220, 213, 0.12);
+  border-radius: 11px;
+  background: rgba(8, 28, 31, 0.62);
+}
+
+.product-access-option:has(input:checked) {
+  border-color: rgba(99, 230, 220, 0.38);
+  background: rgba(99, 230, 220, 0.08);
+}
+
+.product-access-selector input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--accent);
+}
+
+.product-access-option > span {
+  display: grid;
+  gap: 3px;
+}
+
+.product-access-option strong {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.product-access-option small {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: capitalize;
+}
+
+.product-access-note {
+  display: block;
+  margin-top: 14px;
+  color: #789b98;
+  font-size: 11px;
+}
+
 .license-page-content {
   width: min(calc(100% - 48px), 1500px);
   margin: 0 auto;
@@ -1741,6 +1835,15 @@ p {
   }
 
   .agent-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-access-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .product-access-options {
     grid-template-columns: 1fr;
   }
 
