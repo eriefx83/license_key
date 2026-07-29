@@ -43,7 +43,7 @@ export default async function EditUserPage({
   }
 
   if (session.role !== "admin") {
-    redirect("/dashboard");
+    redirect("/admin/licenses/generate");
   }
 
   await ensureUserProductAccessTable();
