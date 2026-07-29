@@ -38,7 +38,7 @@ async function requireAdmin() {
   }
 
   if (session.role !== "admin") {
-    redirect("/dashboard");
+    redirect("/admin/licenses/generate");
   }
 }
 
