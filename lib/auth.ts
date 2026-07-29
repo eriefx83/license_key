@@ -159,7 +159,26 @@ export async function getSession(): Promise<SessionPayload | null> {
       return null;
     }
 
-    return payload;
+    const sql = getDb();
+    const rows = (await sql`
+      SELECT id, email, name, role, status
+      FROM users
+      WHERE id = ${payload.userId}
+      LIMIT 1
+    `) as Record<string, unknown>[];
+    const user = rows[0] as DatabaseUser | undefined;
+
+    if (!user || user.status !== "active") {
+      return null;
+    }
+
+    return {
+      email: user.email,
+      expiresAt: payload.expiresAt,
+      name: user.name,
+      role: user.role,
+      userId: Number(user.id),
+    };
   } catch {
     return null;
   }
