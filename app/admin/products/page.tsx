@@ -41,7 +41,7 @@ export default async function ProductsPage({
   }
 
   if (session.role !== "admin") {
-    redirect("/dashboard");
+    redirect("/admin/licenses/generate");
   }
 
   const params = await searchParams;
