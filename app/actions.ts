@@ -19,7 +19,11 @@ export async function login(formData: FormData) {
   }
 
   await setSession(user, rememberMe);
-  redirect("/dashboard");
+  redirect(
+    user.role === "admin" || user.role === "partner"
+      ? "/admin/licenses/generate"
+      : "/dashboard",
+  );
 }
 
 export async function logout() {
