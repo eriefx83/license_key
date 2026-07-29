@@ -2,8 +2,9 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { PortalShell } from "@/app/_components/portal-shell";
 import { EditUserForm } from "@/app/admin/users/[id]/edit/edit-user-form";
+import type { ProductAccessOption } from "@/app/admin/users/product-access-selector";
 import { getSession } from "@/lib/auth";
-import { getDb } from "@/lib/db";
+import { ensureUserProductAccessTable, getDb } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ const errorMessages: Record<string, string> = {
   email: "That email address is already used by another account.",
   invalid: "Check the form and enter valid user details.",
   password: "A new password must contain at least 8 characters.",
+  product_access: "One or more selected products are no longer available.",
   self: "You cannot remove your own admin access or disable your own account.",
 };
 
@@ -44,6 +46,8 @@ export default async function EditUserPage({
     redirect("/dashboard");
   }
 
+  await ensureUserProductAccessTable();
+
   const { id: rawId } = await params;
   const { error, success } = await searchParams;
   const id = Number(rawId);
@@ -53,13 +57,30 @@ export default async function EditUserPage({
   }
 
   const sql = getDb();
-  const rows = (await sql`
-    SELECT id, email, name, role, status, agent_type, agent_limit
-    FROM users
-    WHERE id = ${id}
-    LIMIT 1
-  `) as EditableUser[];
-  const user = rows[0];
+  const [userRows, productRows, accessRows] = await Promise.all([
+    sql`
+      SELECT id, email, name, role, status, agent_type, agent_limit
+      FROM users
+      WHERE id = ${id}
+      LIMIT 1
+    `,
+    sql`
+      SELECT id, name, status
+      FROM products
+      ORDER BY name ASC, id ASC
+    `,
+    sql`
+      SELECT product_id
+      FROM user_product_access
+      WHERE user_id = ${id}
+      ORDER BY product_id ASC
+    `,
+  ]);
+  const user = (userRows as EditableUser[])[0];
+  const products = productRows as ProductAccessOption[];
+  const selectedProductIds = (
+    accessRows as { product_id: number | string }[]
+  ).map((row) => Number(row.product_id));
 
   if (!user) {
     notFound();
@@ -91,7 +112,11 @@ export default async function EditUserPage({
           </div>
         )}
 
-        <EditUserForm user={user} />
+        <EditUserForm
+          products={products}
+          selectedProductIds={selectedProductIds}
+          user={user}
+        />
       </div>
     </PortalShell>
   );
