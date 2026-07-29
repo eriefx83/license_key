@@ -7,7 +7,8 @@ import { getDb } from "@/lib/db";
 import { verifyPassword } from "@/lib/password";
 
 const COOKIE_NAME = "license_admin_session";
-const SESSION_DURATION_SECONDS = 60 * 60 * 8;
+const DEFAULT_SESSION_DURATION_SECONDS = 60 * 60 * 8;
+const REMEMBERED_SESSION_DURATION_SECONDS = 60 * 60 * 24 * 30;
 
 type SessionPayload = {
   userId: number;
@@ -95,13 +96,13 @@ export function createSessionToken(user: {
   email: string;
   name: string;
   role: string;
-}) {
+}, durationSeconds = DEFAULT_SESSION_DURATION_SECONDS) {
   const payload: SessionPayload = {
     userId: user.id,
     email: user.email,
     name: user.name,
     role: user.role,
-    expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
+    expiresAt: Date.now() + durationSeconds * 1000,
   };
   const encodedPayload = Buffer.from(JSON.stringify(payload)).toString("base64url");
 
@@ -113,15 +114,18 @@ export async function setSession(user: {
   email: string;
   name: string;
   role: string;
-}) {
+}, rememberMe = false) {
   const cookieStore = await cookies();
+  const durationSeconds = rememberMe
+    ? REMEMBERED_SESSION_DURATION_SECONDS
+    : DEFAULT_SESSION_DURATION_SECONDS;
 
-  cookieStore.set(COOKIE_NAME, createSessionToken(user), {
+  cookieStore.set(COOKIE_NAME, createSessionToken(user, durationSeconds), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: SESSION_DURATION_SECONDS,
+    ...(rememberMe ? { maxAge: durationSeconds } : {}),
   });
 }
 
