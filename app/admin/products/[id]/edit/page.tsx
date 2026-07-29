@@ -34,7 +34,7 @@ export default async function EditProductPage({
   }
 
   if (session.role !== "admin") {
-    redirect("/dashboard");
+    redirect("/admin/licenses/generate");
   }
 
   const { id: rawId } = await params;
