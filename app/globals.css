@@ -768,6 +768,12 @@ p {
   gap: 7px;
 }
 
+.user-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
 .product-edit-button,
 .product-delete-button {
   display: inline-flex;
@@ -790,6 +796,11 @@ p {
 .product-delete-button {
   border: 1px solid rgba(255, 170, 165, 0.25);
   color: var(--danger);
+}
+
+.product-delete-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
 }
 
 .license-confirm-submit:disabled {
