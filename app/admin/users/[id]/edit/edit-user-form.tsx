@@ -3,8 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { updateUser } from "@/app/admin/users/actions";
+import {
+  ProductAccessSelector,
+  type ProductAccessOption,
+} from "@/app/admin/users/product-access-selector";
 
 type EditUserFormProps = {
+  products: ProductAccessOption[];
+  selectedProductIds: number[];
   user: {
     agent_limit: number;
     agent_type: string;
@@ -16,7 +22,11 @@ type EditUserFormProps = {
   };
 };
 
-export function EditUserForm({ user }: EditUserFormProps) {
+export function EditUserForm({
+  products,
+  selectedProductIds,
+  user,
+}: EditUserFormProps) {
   const [role, setRole] = useState(user.role);
   const [agentType, setAgentType] = useState(user.agent_type);
   const [agentLimit, setAgentLimit] = useState(String(user.agent_limit || 5));
@@ -113,6 +123,11 @@ export function EditUserForm({ user }: EditUserFormProps) {
             </div>
           </div>
         )}
+
+        <ProductAccessSelector
+          initialSelectedIds={selectedProductIds}
+          products={products}
+        />
 
         <label className="form-field form-field-full">
           <span>New password</span>
