@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PortalShell } from "@/app/_components/portal-shell";
 import { CreatedUserDetails } from "@/app/admin/users/created-user-details";
 import { NewUserForm } from "@/app/admin/users/new-user-form";
+import { UserActionButtons } from "@/app/admin/users/user-action-buttons";
 import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { getNewUserCredentials } from "@/lib/new-user-credentials";
@@ -33,6 +33,7 @@ const errorMessages: Record<string, string> = {
   email: "That email address is already used by another account.",
   invalid:
     "Check all fields, make sure both passwords match and use at least 8 characters.",
+  self_delete: "You cannot delete the admin account you are currently using.",
 };
 
 function formatDate(value: string | Date | null) {
@@ -93,6 +94,12 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
         {query.success === "created" && (
           <div className="form-alert form-alert-success" role="status">
             New user created successfully.
+          </div>
+        )}
+
+        {query.success === "deleted" && (
+          <div className="form-alert form-alert-success" role="status">
+            User deleted successfully.
           </div>
         )}
 
@@ -170,12 +177,12 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                         {formatDate(user.created_at)}
                       </td>
                       <td className="actions-cell">
-                        <Link
-                          className="edit-button"
-                          href={`/admin/users/${user.id}/edit`}
-                        >
-                          Edit
-                        </Link>
+                        <UserActionButtons
+                          isCurrentUser={user.id === session.userId}
+                          userEmail={user.email}
+                          userId={user.id}
+                          userName={user.name}
+                        />
                       </td>
                     </tr>
                   ))}
