@@ -1,7 +1,7 @@
-# License Key Portal
+# Xeno Network
 
-Testing project with a database-backed admin login and an empty dashboard,
-designed for deployment on Vercel.
+License management portal with database-backed user roles, product access
+assignments and deployment on Vercel.
 
 ## Environment variables
 
