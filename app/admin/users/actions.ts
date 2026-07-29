@@ -223,3 +223,27 @@ export async function updateUser(formData: FormData) {
   revalidatePath(editUrl);
   redirect(`${editUrl}?success=1`);
 }
+
+export async function deleteUser(formData: FormData) {
+  const session = await requireAdmin();
+
+  const id = Number(formData.get("id"));
+  const usersUrl = "/admin/users";
+
+  if (!Number.isInteger(id) || id < 1) {
+    redirect(`${usersUrl}?error=invalid`);
+  }
+
+  if (id === session.userId) {
+    redirect(`${usersUrl}?error=self_delete`);
+  }
+
+  const sql = getDb();
+  await sql`
+    DELETE FROM users
+    WHERE id = ${id}
+  `;
+
+  revalidatePath(usersUrl);
+  redirect(`${usersUrl}?success=deleted`);
+}
