@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { PortalShell } from "@/app/_components/portal-shell";
 import { getSession } from "@/lib/auth";
-import { getDb } from "@/lib/db";
+import { ensureUserProductAccessTable, getDb } from "@/lib/db";
 import { generateLicense } from "./actions";
 import { CopyLicenseButton } from "./copy-license-button";
 import { LicenseAccountsManager } from "./license-accounts-manager";
@@ -60,6 +60,8 @@ export default async function GenerateLicensePage({
   if (session.role !== "admin" && session.role !== "partner") {
     redirect("/dashboard");
   }
+
+  await ensureUserProductAccessTable();
 
   const params = await searchParams;
   const createdId = Number(params.created);
@@ -141,10 +143,19 @@ export default async function GenerateLicensePage({
         `
       : Promise.resolve([]),
     sql`
-      SELECT id, name
+      SELECT products.id, products.name
       FROM products
-      WHERE status = 'active'
-      ORDER BY name ASC, id ASC
+      WHERE products.status = 'active'
+        AND (
+          ${session.role} = 'admin'
+          OR EXISTS (
+            SELECT 1
+            FROM user_product_access
+            WHERE user_product_access.user_id = ${session.userId}
+              AND user_product_access.product_id = products.id
+          )
+        )
+      ORDER BY products.name ASC, products.id ASC
     `,
   ]);
   const licenses = licenseRows as LicenseRow[];
