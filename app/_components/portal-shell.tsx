@@ -3,7 +3,7 @@ import Link from "next/link";
 import { logout } from "@/app/actions";
 
 type PortalShellProps = {
-  activePage: "dashboard" | "licenses" | "products" | "users";
+  activePage: "licenses" | "products" | "users";
   children: ReactNode;
   title: string;
   user: {
@@ -33,18 +33,6 @@ export function PortalShell({
         </div>
 
         <nav className="sidebar-nav" aria-label="Admin navigation">
-          <Link
-            className={`sidebar-link ${
-              activePage === "dashboard" ? "sidebar-link-active" : ""
-            }`}
-            href="/dashboard"
-          >
-            <span className="sidebar-link-icon" aria-hidden="true">
-              D
-            </span>
-            Dashboard
-          </Link>
-
           {(user.role === "admin" || user.role === "partner") && (
             <Link
               className={`sidebar-link ${
