@@ -55,6 +55,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             required
           />
 
+          <label className="remember-me" htmlFor="remember_me">
+            <input id="remember_me" name="remember_me" type="checkbox" />
+            <span>Remember me</span>
+          </label>
+
           <button type="submit">Sign in</button>
         </form>
 
